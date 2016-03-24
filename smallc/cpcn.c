@@ -190,12 +190,10 @@ int	nxtlab,		/* next avail label # */
 	argstk,		/* function arg sp */
 	ncmp,		/* # open compound statements */
 	errcnt,		/* # errors in compilation */
-	errstop,	/* stop on error			gtf 7/17/80 */
 	eof,		/* set non-zero on final input eof */
 	input,		/* iob # for input file */
 	output,		/* iob # for output file (if any) */
 	input2,		/* iob # for "include" file */
-	ctext,		/* non-zero to intermix c-source */
 	cmode,		/* non-zero while parsing c-code */
 			/* zero when passing assembly code */
 	lastst,		/* last executed statement type */
@@ -213,8 +211,6 @@ char   *currfn,		/* ptr to symtab entry for current fn.	gtf 7/17/80 */
        *savecurr;	/* copy of currfn for #include		gtf 7/17/80 */
 char	quote[2];	/* literal string for '"' */
 char	*cptr;		/* work ptr to any char buffer */
-int	*iptr;		/* work ptr to any int buffer */
-/*	>>>>> start cc1 <<<<<<		*/
 
 
 /*					*/
@@ -222,47 +218,41 @@ int	*iptr;		/* work ptr to any int buffer */
 /*					*/
 main()
 {
-	hello();	/* greet user */
-	see();		/* determine options */
 	litlab=1;
-	openin();	/* first file to process */
-	while (input!=0)	/* process user files till he quits */
-		{
-		extptr=startextrn;	/* clear external symbols */
-		glbptr=startglb;	/* clear global symbols */
-		locptr=startloc;	/* clear local symbols */
-		wqptr=wq;		/* clear while queue */
-		macptr=		/* clear the macro pool */
-		litptr=		/* clear literal pool */
-	  	Zsp =		/* stack ptr (relative) */
-		errcnt=		/* no errors */
-		eof=		/* not end-of-file yet */
-		input2=		/* no include file */
-		saveout=	/* no diverted output */
-		ncmp=		/* no open compound states */
-		lastst=		/* no last statement yet */
-		cextern=	/* no externs yet */
-		fnstart=	/* current "function" started at line 0 gtf 7/2/80 */
-		lineno=		/* no lines read from file		gtf 7/2/80 */
-		infunc=		/* not in function now			gtf 7/2/80 */
-		quote[1]=
+	extptr=startextrn;	/* clear external symbols */
+	glbptr=startglb;	/* clear global symbols */
+	locptr=startloc;	/* clear local symbols */
+	wqptr=wq;		/* clear while queue */
+	macptr=		/* clear the macro pool */
+	litptr=		/* clear literal pool */
+  	Zsp =		/* stack ptr (relative) */
+	errcnt=		/* no errors */
+	eof=		/* not end-of-file yet */
+	input2=		/* no include file */
+	saveout=	/* no diverted output */
+	ncmp=		/* no open compound states */
+	lastst=		/* no last statement yet */
+	cextern=	/* no externs yet */
+	fnstart=	/* current "function" started at line 0 gtf 7/2/80 */
+	lineno=		/* no lines read from file		gtf 7/2/80 */
+	infunc=		/* not in function now			gtf 7/2/80 */
+	quote[1]=
 		0;		/*  ...all set to zero.... */
-		quote[0]='"';		/* fake a quote literal */
-		currfn=NULL;	/* no function yet			gtf 7/2/80 */
-		cmode=nxtlab=1;	/* enable preprocessing and reset label numbers */
-		openout();
-		header();
-		parse();
-		if (ncmp) error("missing closing bracket");
-		extdump();
-		dumpublics();
-		trailer();
-		closeout();
-		errorsummary();
-		openin();
-		}
+	quote[0]='"';		/* fake a quote literal */
+	currfn=NULL;	/* no function yet			gtf 7/2/80 */
+	cmode=nxtlab=1;	/* enable preprocessing and reset label numbers */
+	openin();
+	openout();
+	header();
+	parse();
+	if (ncmp) error("missing closing bracket");
+	extdump();
+	dumpublics();
+	trailer();
+	closeout();
+	errorsummary();
 }
-/* ### cpcn-2 */
+
 /*					*/
 /*	Abort compilation		*/
 /*		gtf 7/17/80		*/
@@ -415,62 +405,23 @@ errorsummary()
 	outstr(" errors in compilation.");
 	nl();
 	}
-/* ### cpcn-5 */
-/*	Greet User	*/
 
-
-hello()
-	{
-	nl();nl();		/* print banner */
-	pl(BANNER);
-	nl();
-	pl(AUTHOR);
-	nl();nl();
-	pl("Distributed by: CAPROCK SYSTEMS, INC.");
-	pl("                P.O. Box 13814");
-	pl("                Arlington, Texas 76013");
-	nl();
-	pl(VERSION);
-	nl();
-	nl();
-} /* end of hello */
-
-
-see()
-	{
-	kill();
-	/* see if user wants to be sure to see all errors */
-	pl("Should I pause after an error (y,N)?");
-	gets(line);
-	errstop=0;
-	if((ch()=='Y')|(ch()=='y'))
-		errstop=1;
-
-	kill();
-	pl("Do you want the small-c:PC-text to appear (y,N)?");
-	gets(line);
-	ctext=0;
-	if((ch()=='Y')|(ch()=='y')) ctext=1;
-        }
 /*					*/
 /*	Get output filename		*/
 /*					*/
 openout()
-	{
+{
 	output=0;		/* start with none */
 	while(output==0)
 		{
-		kill();
 		pl("Output filename? "); /* ask...*/
 		gets(line);	/* get a filename */
-		if(ch()==0)break;	/* none given... */
 		if((output=fopen(line,"w"))==NULL) /* if given, open */
-			{output=0;	/* can't open */
-			error("Open failure!");
-			}
-		}
+			pl("Open failure!");
+	}
 	kill();			/* erase line */
 }
+
 /*					*/
 /*	Get (next) input file		*/
 /*					*/
@@ -478,18 +429,12 @@ openin()
 {
 	input=0;		/* none to start with */
 	while(input==0){	/* any above 1 allowed */
-		kill();		/* clear line */
 		pl("Input filename? ");
 		gets(line);	/* get a name */
-		if(ch()==0) break;
-		if((input=fopen(line,"r"))!=NULL)
-			newfile();			/* gtf 7/16/80 */
-		else {	input=0;	/* can't open it */
+		if((input=fopen(line,"r"))==NULL)
 			pl("Open failure");
-			}
-		}
-	kill();		/* erase line */
 	}
+}
 
 
 /*					*/
@@ -502,7 +447,6 @@ newfile()
 	currfn  = NULL;	/* because no fn. yet */
 	infunc  = 0;	/* therefore not in fn. */
 /* end newfile */}
-/* ### cpcn-6 */
 
 
 /*					*/
@@ -1182,12 +1126,7 @@ readline()
 				else input=0;
 			}
 		if(lptr)
-			{if((ctext)&(cmode))
-				{comment();
-				outstr(line);
-				nl();
-				}
-			lptr=0;
+			{lptr=0;
 			return;
 			}
 		}
@@ -1375,52 +1314,19 @@ tab()
 	{outbyte(9);}
 col()
 	{outbyte(58);}
-/* ### cpcn-23 */
+
 error(ptr)
-char ptr[];
-{	int k;
-	char junk[81];
-
-
+	char ptr[];
+{
 	toconsole();
-	outstr("Line "); outdec(lineno); outstr(", ");
-	if(infunc==0)
-		outbyte('(');
-	if(currfn==NULL)
-		outstr("start of file");
-	else	outstr(currfn+name);
-	if(infunc==0)
-		outbyte(')');
-	outstr(" + ");
-	outdec(lineno-fnstart);
-	outstr(": ");  outstr(ptr);  nl();
-
-
-	outstr(line); nl();
-
-
-	k=0;	/* skip to error position */
-	while(k<lptr){
-		if(line[k++]==9)
-			tab();
-		else	outbyte(' ');
-		}
-	outbyte('^');  nl();
+	outstr("Line ");
+	outdec(lineno);
+	outstr(": ");
+	outstr(ptr);
+	nl();
 	++errcnt;
-
-
-	if(errstop){
-		pl("Continue (Y,n,g) ? ");
-		gets(junk);		
-		k=junk[0];
-		if((k=='N') | (k=='n'))
-			abort();
-		if((k=='G') | (k=='g'))
-			errstop=0;
-		}
 	tofile();
-/* end error */}
-
+}
 
 ol(ptr)
 	char ptr[];
