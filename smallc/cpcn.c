@@ -9,19 +9,7 @@
 /************************************************/
 
 
-#define BANNER  "* * *  Small-C:PC  V1.1  * * *"
-
-
-#define VERSION "PC-DOS Version N: June, 1982"
-
-
-#define AUTHOR "By Ron Cain, Modified by CAPROCK SYSTEMS for IBM PC"
-
-
 /*	Define system dependent parameters	*/
-
-
-/*	Stand-alone definitions			*/
 
 
 #define NULL 0
@@ -143,13 +131,6 @@
 #define	stcont	5
 #define	stasm	6
 #define	stexp	7
-
-
-/* Define how to carve up a name too long for the assembler */
-
-
-#define asmpref	7
-#define asmsuff	7
 
 
 /*	Now reserve some storage words		*/
@@ -295,67 +276,40 @@ parse()
 		blanks();	/* force eof if pending */
 		}
 	}
-/* ### cpcn-3 */
+
 dumpublics()
-	{
-	outstr("DUMMY SEGMENT BYTE STACK 'dummy'");nl();
-	outstr("DUMMY ENDS");nl();
-	outstr("STACK SEGMENT BYTE PUBLIC 'stack'");nl();
+{
+	ol(".data");
 	dumplits();
 	dumpglbs();
-	outstr("STACK ENDS");nl();
-	}
+}
 
 extdump()
-	{
-	char *ptrext;
-	ptrext=startextrn;
-	while(ptrext<extptr)
-		{
-		if((cptr=findglb(ptrext))!=0)
-			{if(cptr[ident]==function)
-				if(cptr[offset]!=function) outextrn(ptrext);
-			}
-		else outextrn(ptrext);
-		ptrext=ptrext+strlen(ptrext)+2;
-		}
-	outstr("CSEG ENDS");nl();
-	}
-/* ### cpcn-4 */
-outextrn(ptr)
-	char *ptr;
-	{
-	char *functype;
-	functype=ptr+strlen(ptr)+1;
-	if(*functype==statref) return;
-	ot("EXTRN ");
-	if(*functype==rtsfunc) outasm(ptr);
-	else outname(ptr);
-	col();outstr("NEAR");nl();
-	}
-
+{
+}
 
 /*					*/
 /*	Dump the literal pool		*/
 /*					*/
 dumplits()
-	{int j,k;
-	if (litptr==0) return;	/* if nothing there, exit...*/
-	printlabel(litlab); /* print literal label */
-	k=0;			/* init an index... */
-	while (k<litptr)	/* 	to loop with */
-		{defbyte();	/* pseudo-op to define byte */
-		j=10;		/* max bytes per line */
-		while(j--)
-			{outdec((litq[k++]&127));
-			if ((j==0) | (k>=litptr))
-				{nl();		/* need <cr> */
+{
+	int j,k;
+	printlabel(litlab);col();nl();
+	k=0;
+	while (k<litptr) {
+		defbyte();
+		j=10;
+		while(j--) {
+			outdec(litq[k++]);
+			if ((j==0) | (k>=litptr)) {
+				nl();
 				break;
-				}
-			outbyte(',');	/* separate bytes */
 			}
+			outbyte(',');	/* separate bytes */
 		}
 	}
+}
+
 /*					*/
 /*	Dump all static variables	*/
 /*					*/
@@ -363,37 +317,28 @@ dumpglbs()
 {
 	int j;
 	cptr=startglb;
-	while(cptr<glbptr)
-		{if(cptr[ident]!=function)
-			/* do if anything but function */
-			{
-			if(findext(cptr+name))
-				{
-				ot("EXTRN ");
-				outname(cptr);col();
-				if((cptr[type]==cint) |
-					(cptr[ident]==pointer)) outstr("WORD");
-				else outstr("BYTE");
-				nl();
-				}
-			else {
-				ot("PUBLIC ");outname(cptr);nl();
+	while (cptr<glbptr) {
+		if (cptr[ident]!=function) {
+			if (findext(cptr+name)==0) {
+				j=((cptr[offset]&255)+(cptr[offset+1]<<8));
+				ot(".comm ");
 				outname(cptr);
-				/* output name as label... */
-				j=((cptr[offset]&255)+
-					((cptr[offset+1]&255)<<8));
-					/* calc # bytes */
-				if((cptr[type]==cint)|
-					(cptr[ident]==pointer)) defword();
-				else defbyte();
-				outdec(j);
-				outstr(" DUP(?)");
-				nl();
+				outbyte(',');
+				if ((cptr[type]==cint)|(cptr[ident]==pointer)) {
+					outdec(j<<2);
+					outstr(",4");
 				}
+				else {
+					outdec(j);
+					outstr(",1");
+				}
+				nl();
 			}
-		cptr=cptr+symsiz;
 		}
+		cptr=cptr+symsiz;
+	}
 }
+
 /*					*/
 /*	Report errors for user		*/
 /*					*/
@@ -416,7 +361,7 @@ openout()
 		{
 		pl("Output filename? "); /* ask...*/
 		gets(line);	/* get a filename */
-		if((output=fopen(line,"w"))==NULL) /* if given, open */
+		if((output=fopen("w",line))==NULL) /* if given, open */
 			pl("Open failure!");
 	}
 	kill();			/* erase line */
@@ -431,7 +376,7 @@ openin()
 	while(input==0){	/* any above 1 allowed */
 		pl("Input filename? ");
 		gets(line);	/* get a name */
-		if((input=fopen(line,"r"))==NULL)
+		if((input=fopen("r",line))==NULL)
 			pl("Open failure");
 	}
 }
@@ -464,7 +409,7 @@ doinclude()
 
 	if(input2)					/* gtf 7/16/80 */
 		error("Cannot nest include files");
-	else if((input2=fopen(line+lptr,"r"))==NULL)
+	else if((input2=fopen("r",line+lptr))==NULL)
 		{input2=0;
 		error("Open failure on include file");
 		}
@@ -565,17 +510,17 @@ declloc(typ)		/* typ is cchar or cint */
 				{k=needsub();
 				if(k)
 					{j=array;
-					if(typ==cint)k=k+k;
+					if(typ==cint)k=k<<2;
 					}
 				else
 					{j=pointer;
-					k=2;
+					k=4;
 					}
 				}
 			else
 				if((typ==cchar)
 					&(j!=pointer))
-					k=1;else k=2;
+					k=1;else k=4;
 			/* change machine stack */
 			Zsp=modstk(Zsp-k);
 			addloc(sname,j,typ,Zsp);
@@ -584,16 +529,10 @@ declloc(typ)		/* typ is cchar or cint */
 		if (match(",")==0) return;
 		}
 	}
-/* ### cpcn-8 */
-/*	>>>>>> start of cc2 <<<<<<<<	*/
-
 
 /*					*/
 /*	Get required array size		*/
 /*					*/
-/* invoked when declared variable is followed by "[" */
-/*	this routine makes subscript the absolute */
-/*	size of the array. */
 needsub()
 	{
 	int num[1];
@@ -646,12 +585,12 @@ newfunc()
 
 	/* we had better see open paren for args... */
 	if(match("(")==0)error("missing open paren");
-	ot("PUBLIC ");outname(n);nl();
+	ot(".globl ");outname(n);nl();
 	outname(n);col();nl();	/* print function name */
 	argstk=0;		/* init arg count */
 	while(match(")")==0)	/* then count args */
 		/* any legal name bumps arg count */
-		{if(symname(n))argstk=argstk+2;
+		{if(symname(n))argstk=argstk+4;
 		else{error("illegal argument name");junk();}
 		blanks();
 		/* if not closing paren, should be comma */
@@ -705,7 +644,7 @@ getarg(t)		/* t = cchar or cint */
 			/* add entry as pointer */
 			}
 		addloc(n,j,t,argstk);
-		argstk=argstk-2;	/* cnt down */
+		argstk=argstk-4;	/* cnt down */
 		if(endst())return;
 		if(match(",")==0)error("expected comma");
 		}
@@ -884,7 +823,7 @@ callfunction(ptr)
 		expression();	/* get an argument */
 		if(ptr==0)swapstk(); /* don't push addr */
 		zpush();	/* push argument */
-		nargs=nargs+2;	/* count args*2 */
+		nargs=nargs+4;	/* count args*2 */
 		if (match(",")==0) break;
 		}
 	needbrack(")");
@@ -1020,21 +959,24 @@ symname(sname)
 	sname[k]=0;
 	return 1;
 	}
-/* ### cpcn-17 */
+
 /* Return next avail internal label number */
 getlabel()
 {	return(++nxtlab);
 }
+
 /* Print specified number as label */
 printlabel(label)
 	int label;
-{	outasm("cc");
+{
+	outasm(".L");
 	outdec(label);
 }
+
 /* Test if given character is alpha */
 alpha(c)
 	char c;
-{	c=c&127;
+{
 	return(((c>='a')&(c<='z'))|
 		((c>='A')&(c<='Z'))|
 		(c=='_'));
@@ -1042,7 +984,7 @@ alpha(c)
 /* Test if given character is numeric */
 numeric(c)
 	char c;
-{	c=c&127;
+{
 	return((c>='0')&(c<='9'));
 }
 /* Test if given character is alphanumeric */
@@ -1280,7 +1222,7 @@ outbyte(c)
 {
 	if(c==0)return 0;
 	if(output)
-		{if((putc(c,output))<=0)
+		{if((putc(output,c))<=0)
 			{closeout();
 			error("Output file error");
 			abort();			/* gtf 7/17/80 */
@@ -1289,24 +1231,19 @@ outbyte(c)
 	else putchar(c);
 	return c;
 }
+
 outstr(ptr)
 	char ptr[];
- {
-	int k;
-	k=0;
-	while(outbyte(ptr[k++]));
- }
-
+{
+	while (outbyte(*ptr++));
+}
 
 /* write text destined for the assembler to read */
-/* (i.e. stuff not in comments)			*/
-/*  gtf  6/26/80 */
 outasm(ptr)
-char *ptr;
+	char *ptr;
 {
-	while(outbyte(raise(*ptr++)));
-/* end outasm */}
-
+	outstr(ptr);
+}
 
 nl()
 	{outbyte(eol);}
@@ -1423,34 +1360,16 @@ outdec(number)
 		k=k/10;
 		}
  }
+
 /* return the length of a string */
-/* gtf 4/8/80 */
 strlen(s)
-char *s;
-{	char *t;
-
-
+	char *s;
+{
+	char *t;
 	t = s;
 	while(*s) s++;
 	return(s-t);
-/* end strlen */}
-
-
-/* convert lower case to upper */
-/* gtf 6/26/80 */
-raise(c)
-char c;
-{
-	if((c>='a') & (c<='z'))
-		c = c - 'a' + 'A';
-	return(c);
-/* end raise */}
-/* ### cpcn-26 */
-/*	>>>>>>> start of cc5 <<<<<<<	*/
-
-
-/* modified 9/25/80: putstk() */
-
+}
 
 expression()
 {
@@ -1772,7 +1691,7 @@ heir10(lval)
 		else return k;
 		}
 	}
-/* ### cpcn-34 */
+
 heir10inc(lval)
 	int lval[];
 {
@@ -1781,93 +1700,96 @@ heir10inc(lval)
 	rvalue(lval);
 	inc();
 	ptr=lval[0];
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
-			inc();
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
+		inc();
+		inc();
+		inc();
+	}
 	store(lval);
 }
+
 heir10dec(lval)
 	int lval[];
 {
 	char *ptr;
-
-
 	if(lval[1])zpush();
 	rvalue(lval);
 	dec();
 	ptr=lval[0];
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
-			dec();
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
+		dec();
+		dec();
+		dec();
+	}
 	store(lval);
 }
+
 heir10as(lval)
 	int lval[];
 {
 	int k;
 	char *ptr;
-
-
 	k=heir10(lval);
 	if(k)rvalue(lval);
 	lval[1]=cint;
 	if(ptr=lval[0])lval[1]=ptr[type];
 	lval[0]=0;
 }
-/* ### cpcn-35 */
+
 heir10at(lval)
 	int lval[];
 {
 	char *ptr;
-
-
-	immed();
-	outstr("OFFSET ");
+	ot("movl $");
 	outname(ptr=lval[0]);
+	outstr(",%eax");
 	nl();
 	lval[1]=ptr[type];
 }
+
 heir10id(lval)
 	int lval[];
 {
 	char *ptr;
-
-
 	if(lval[1])zpush();
 	rvalue(lval);
 	inc();
 	ptr=lval[0];
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
-			inc();
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
+		inc();
+		inc();
+		inc();
+	}
 	store(lval);
 	dec();
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
 		dec();
+		dec();
+		dec();
+	}
 }
+
 heir10di(lval)
 	int lval[];
 {
 	char *ptr;
-
-
 	if(lval[1])zpush();
 	rvalue(lval);
 	dec();
 	ptr=lval[0];
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
-			dec();
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
+		dec();
+		dec();
+		dec();
+	}
 	store(lval);
 	inc();
-	if((ptr[ident]==pointer)&
-		(ptr[type]==cint))
+	if((ptr[ident]==pointer)&(ptr[type]==cint)) {
 		inc();
+		inc();
+		inc();
+	}
 }
-/* ### cpcn-36 */
-/*	>>>>>> start of cc7 <<<<<<	*/
-
 
 heir11(lval)
 	int *lval;
@@ -1912,16 +1834,16 @@ heir11(lval)
 		else return k;
 		}
 	if(ptr==0)return k;
-	if(ptr[ident]==function)
-		{immed();
-		outstr("OFFSET ");
+	if(ptr[ident]==function) {
+		ot("movl $ ");
 		outname(ptr);
+		outstr(",%eax");
 		nl();
 		return 0;
-		}
+	}
 	return k;
 }
-/* ### cpcn-37 */
+
 primary(lval)
 	int *lval;
 {	char *ptr,sname[namesize];int num[1];
@@ -1945,9 +1867,10 @@ primary(lval)
 			{lval[0]=ptr;
 			lval[1]=0;
 			if(ptr[ident]!=array)return 1;
-			immed();
-			outstr("OFFSET ");
-			outname(ptr);nl();
+			ot("movl $");
+			outname(ptr);
+			outstr(",%eax");
+			nl();
 			lval[1]=ptr[type];
 			return 0;
 			}
@@ -1958,14 +1881,14 @@ primary(lval)
 		}
 	if(constant(num))
 		return(lval[0]=lval[1]=0);
-	else
-		{error("invalid expression");
-		immed();outdec(0);nl();
+	else {
+		error("invalid expression");
+		ol("xorl %eax,%eax");
 		junk();
 		return 0;
-		}
 	}
-/* ### cpcn-38 */
+}
+
 store(lval)
 	int *lval;
 {	if (lval[1]==0)putmem(lval[0]);
@@ -1985,20 +1908,32 @@ test(label)
 	needbrack(")");
 	testjump(label);
 }
+
 constant(val)
 	int val[];
-{	if (number(val))
-		immed();
-	else if (pstr(val))
-		immed();
-	else if (qstr(val))
-		{immed();outstr("OFFSET ");printlabel(litlab);outbyte('+');}
-	else return 0;	
-	outdec(val[0]);
+{
+	if (number(val)) {
+		ot("mov $");
+		outdec(val[0]);
+	}
+	else if (pstr(val)) {
+		ot("mov $");
+		outdec(val[0]);
+	}
+	else if (qstr(val)) {
+		ot("mov $");
+		outdec(val[0]);
+		outbyte('+');
+		printlabel(litlab);
+	}
+	else {
+		return 0;
+	}
+	outstr(",%eax");
 	nl();
 	return 1;
 }
-/* ### cpcn-39 */
+
 number(val)
 	int val[];
 {	int k,minus;char c;
@@ -2019,11 +1954,11 @@ number(val)
 }
 pstr(val)
 	int val[];
-{	int k;char c;
+{	int c,k;
 	k=0;
 	if (match("'")==0) return 0;
 	while((c=gch())!=39)
-		k=(k&255)*256 + (c&127);
+		k=c;
 	val[0]=k;
 	return 1;
 }
@@ -2046,9 +1981,6 @@ qstr(val)
 	litq[litptr++]=0;
 	return 1;
 }
-/* ### cpcn-40 */
-/*	>>>>>> start of cc8 <<<<<<<	*/
-
 
 /* Begin a comment line for the assembler */
 comment()
@@ -2058,346 +1990,361 @@ comment()
 
 /* Put out assembler info before any code is generated */
 header()
-{	comment();
-	outstr(BANNER);
-	nl();
-	comment();
-	outstr(VERSION);
-	nl();
-	comment();
-	outstr(AUTHOR);
-	nl();
-	comment();
-	nl();
-	outstr("CSEG SEGMENT BYTE PUBLIC 'code'");nl();
-	ol("ASSUME CS:CSEG,SS:STACK");
+{
+	ol(".text");
 }
-/* Print any assembler stuff needed af);
-	outstr("CSEG SEGMENT BYTE PUBLIC 'code'");nl();
-	ol("ASSUME CS:CSEG,SS:STACK");
-}
-/* Print any assembler stuff needed after all code */
+
 trailer()
 {
-	nl();			/* 6 May 80 rj errorsummary() now goes to console */
-	comment();
-	outstr(" --- End of Compilation ---");
-	nl();
-	ol("END");
 }
-/* ### cpcn-41 */
+
 /* Print out a name such that it won't annoy the assembler */
 /*	(by matching anything reserved, like opcodes.) */
-/*	gtf 4/7/80 */
 outname(sname)
-char *sname;
-{	int len, i,j;
+	char *sname;
+{
+	outasm(sname);
+}
 
-
-	outasm("qz");
-	len = strlen(sname);
-	if(len>(asmpref+asmsuff)){
-		i = asmpref;
-		len = len-asmpref-asmsuff;
-		while(i-- > 0)
-			outbyte(raise(*sname++));
-		while(len-- > 0)
-			sname++;
-		while(*sname)
-			outbyte(raise(*sname++));
-		}
-	else	outasm(sname);
-/* end outname */}
 /* Fetch a static memory cell into the primary register */
 getmem(sym)
 	char *sym;
-{	if((sym[ident]!=pointer)&(sym[type]==cchar))
-		{ ot("MOV AL,SS:");
-		outname(sym+name);
-		nl();
-		ol("CBW");
-		ol("MOV BX,AX");
-		}
-	else
-		{ot("MOV BX,SS:");
-		outname(sym+name);
-		nl();
-		}
+{
+	if ((sym[ident]!=pointer)&(sym[type]==cchar)) {
+		ot("movsbl ");
 	}
+	else {
+		ot("movl ");
+	}
+	outname(sym+name);
+	outstr(",%eax");
+	nl();
+}
+
 /* Fetch the address of the specified symbol */
 /*	into the primary register */
 getloc(sym)
 	char *sym;
-{	immed();
-	outdec(((sym[offset]&255)+
-		((sym[offset+1]&255)<<8))-
-		Zsp);
+{
+	ot("leal ");
+	outdec((sym[offset]&255)+(sym[offset+1]<<8)-Zsp);
+	outstr("(%esp),%eax");
 	nl();
-	ol("ADD BX,SP");
-	}
+}
+
 /* Store the primary register into the specified */
 /*	static memory cell */
 putmem(sym)
 	char *sym;
 {
-	ot("MOV SS:");outname(sym+name);
-	outstr(",");
-	if((sym[ident]!=pointer)&(sym[type]==cchar)) outstr("BL");
-	else outstr("BX");
-	nl();
+	if ((sym[ident]!=pointer)&(sym[type]==cchar)) {
+		ot("movb %al,");
 	}
+	else {
+		ot("movl %eax,");
+	}
+	outname(sym+name);
+	nl();
+}
+
 /* Store the specified object type in the primary register */
 /*	at the address on the top of the stack */
 putstk(typeobj)
 	char typeobj;
-{	zpop();
-	if(typeobj==cint)
-		callrts("ccpint");
-	else {
-		ol("MOV BP,DX");
-		ol("MOV [BP],BL");
-		}
+{
+	zpop();
+	if (typeobj==cchar) {
+		ol("movb %al,(%ecx)");
 	}
-/* ### cpcn-42 */
+	else {
+		ol("movl %eax,(%ecx)");
+	}
+}
+
 /* Fetch the specified object type indirect through the */
 /*	primary register into the primary register */
 indirect(typeobj)
-	char typeobj;
-{	if(typeobj==cchar)callrts("ccgchar");
-		else callrts("ccgint");
-}
-/* Swap the primary and secondary registers */
-swap()
+	int typeobj;
 {
-	ol("XCHG DX,BX");
+	if (typeobj==cchar) {
+		ol("movsbl (%eax),%eax");
+	}
+	else {
+		ol("movl (%eax),%eax");
+	}
 }
+
 /* Print partial instruction to get an immediate value */
 /*	into the primary register */
 immed()
 {
 	ot("MOV BX,");
 }
+
 /* Push the primary register onto the stack */
 zpush()
 {
-	ol("PUSH BX");
-	Zsp=Zsp-2;
+	ol("pushl %eax");
+	Zsp=Zsp-4;
 }
+
 /* Pop the top of the stack into the secondary register */
 zpop()
 {
-	ol("POP DX");
-	Zsp=Zsp+2;
+	ol("popl %ecx");
+	Zsp=Zsp+4;
 }
+
 /* Swap the primary register and the top of the stack */
 swapstk()
 {
-	ol("MOV BP,SP");
-	ol("XCHG BX,[BP]");
+	ol("xchgl %eax,(%esp)");
 }
+
 /* Call the specified subroutine name */
 zcall(sname)
 	char *sname;
-{	ot("CALL ");
+{
+	ot("call ");
 	outname(sname);
 	nl();
 	addext(sname,userfunc);
 }
-/* Call a run-time library routine */
-callrts(sname)
-char *sname;
-{
-	ot("CALL ");
-	outasm(sname);
-	nl();
-	addext(sname,rtsfunc);
-/*end callrts*/}
-
 
 /* Return from subroutine */
 zret()
-{	ol("RET");
+{
+	ol("ret");
 }
-/* ### cpcn-43 */
+
 /* Perform subroutine call to value on top of stack */
 callstk()
-{	immed();
-	outasm("$+11");
-	nl();
-	swapstk();
-	ol("JMP BX");
-	Zsp=Zsp-2;
-	}
+{
+	ol("CALLSTK");
+}
+
 /* Jump to specified internal label number */
 jump(label)
 	int label;
-{	ot("JMP ");
+{
+	ot("jmp ");
 	printlabel(label);
 	nl();
-	}
+}
+
 /* Test the primary register and jump if false to label */
 testjump(label)
 	int label;
 {	
-	ol("OR BX,BX");
-	ol("JNZ $+5");
-	jump(label);
+	ol("orl %eax,%eax");
+	ot("jz ");
+	printlabel(label);
+	nl();
 }
+
 /* Print pseudo-op to define a byte */
 defbyte()
-{	ot("DB ");
+{	ot(".byte ");
 }
-/*Print pseudo-op to define storage */
-defstorage()
-{	ot("DS ");
-}
+
 /* Print pseudo-op to define a word */
 defword()
-{	ot("DW ");
+{	ot(".word ");
 }
+
 /* Modify the stack pointer to the new value indicated */
 modstk(newsp)
 	int newsp;
- {	int k;
+{
+	int k;
 	k=newsp-Zsp;
-	if(k==0)return newsp;
-	if(k>=0)
-		{if(k<7)
-			{if(k&1)
-				{
-				ol("INC SP");
-				k--;
-				}
-			while(k)
-				{ol("POP CX");
-				k=k-2;
-				}
-			return newsp;
-			}
-		}
-	if(k<0)
-		{if(k>-7)
-			{if(k&1)
-				{ ol("DEC SP");
-				k++;
-				}
-			while(k)
-				{ol("PUSH CX");
-				k=k+2;
-				}
-			return newsp;
-			}
-		}
-	swap();
-	immed();outdec(k);nl();
-	ol("ADD SP,BX");
-	swap();
+	if (k) {
+		ot("addl $");
+		outdec(k);
+		outstr(",%esp");
+		nl();
+	}
 	return newsp;
 }
-/* ### cpcn-44 */
+
 /* Double the primary register */
 doublereg()
-{	ol("ADD BX,BX");
+{
+	ol("leal (,%eax,4),%eax");
 }
+
 /* Add the primary and secondary registers */
 /*	(results in primary) */
 zadd()
-{	ol("ADD BX,DX");
+{
+	ol("addl %ecx,%eax");
 }
+
 /* Subtract the primary register from the secondary */
 /*	(results in primary) */
 zsub()
 {
-	ol("SUB BX,DX");
-	ol("NEG BX");
+	ol("subl %ecx,%eax");
+	ol("negl %eax");
 }
+
 /* Multiply the primary and secondary registers */
 /*	(results in primary */
 mult()
-{	callrts("ccmult");
+{
+	ol("imull %ecx,%eax");
 }
+
 /* Divide the secondary register by the primary */
-/*	(quotient in primary, remainder in secondary) */
 div()
-{	callrts("ccdiv");
+{
+	ol("xchg %ecx,%eax");
+	ol("cltd");
+	ol("idivl %ecx");
 }
+
 /* Compute remainder (mod) of secondary register divided */
 /*	by the primary */
-/*	(remainder in primary, quotient in secondary) */
 zmod()
-{	div();
-	swap();
-	}
+{
+	ol("xchg %ecx,%eax");
+	ol("cltd");
+	ol("idivl %ecx");
+	ol("movl %edx,%eax");
+}
+
 /* Inclusive 'or' the primary and the secondary registers */
 /*	(results in primary) */
 zor()
-	{ol("OR BX,DX");}
+{
+	ol("orl %ecx,%eax");
+}
+
 /* Exclusive 'or' the primary and seconday registers */
 /*	(results in primary) */
 zxor()
-	{ol("XOR BX,DX");}
+{
+	ol("xorl %ecx,%eax");
+}
+
 /* 'And' the primary and secondary registers */
 /*	(results in primary) */
 zand()
-	{ol("AND BX,DX");}
+{
+	ol("andl %ecx,%eax");
+}
+
 /* Arithmetic shift right the secondary register number of */
 /* 	times in primary (results in primary) */
 asr()
-	{ol("MOV CL,BL");ol("MOV BX,DX");ol("SAR BX,CL");}
+{
+	ol("xchg %ecx,%eax");
+	ol("sarl %cl,%eax");
+}
+
 /* Arithmetic left shift the secondary register number of */
 /*	times in primary (results in primary) */
 asl()
-	{ol("MOV CL,BL");ol("MOV BX,DX");ol("SAL BX,CL");}
+{
+	ol("xchg %ecx,%eax");
+	ol("sall %cl,%eax");
+}
+
 /* Form two's complement of primary register */
 neg()
-	{ol("NEG BX");}
-/* Form one's complement of primary register */
-com()
-	{ol("NOT BX");}
+{
+	ol("negl %eax");
+}
+
 /* Increment the primary register by one */
 inc()
-	{ol("INC BX");}
+{
+	ol("incl %eax");
+}
+
 /* Decrement the primary register by one */
 dec()
-	{ol("DEC BX");}
-
-
-/* Following are the conditional operators */
-/* They compare the secondary register against the primary */
-/* and put a literal 1 in the primary if the condition is */
-/* true, otherwise they clear the primary register */
-
+{
+	ol("decl %eax");
+}
 
 /* Test for equal */
 zeq()
-	{callrts("cceq");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("sete %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for not equal */
 zne()
-	{callrts("ccne");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setne %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for less than (signed) */
 zlt()
-	{callrts("cclt");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setl %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for less than or equal to (signed) */
 zle()
-	{callrts("ccle");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setle %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for greater than (signed) */
 zgt()
-	{callrts("ccgt");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setg %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for greater than or equal to (signed) */
 zge()
-	{callrts("ccge");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setge %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for less than (unsigned) */
 ult()
-	{callrts("ccult");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setb %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for less than or equal to (unsigned) */
 ule()
-	{callrts("ccule");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setbe %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for greater than (unsigned) */
 ugt()
-	{callrts("ccugt");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("seta %al");
+	ol("movzbl %al,%eax");
+}
+
 /* Test for greater than or equal to (unsigned) */
 uge()
-	{callrts("ccuge");}
+{
+	ol("cmpl %eax,%ecx");
+	ol("setae %al");
+	ol("movzbl %al,%eax");
+}
 
-
-/*	<<<<<  End of small-c:PC compiler  >>>>>	*/
