@@ -25,14 +25,7 @@
 
 
 #define NULL 0
-#define eol 13
-
-
-/*	UNIX definitions (if not stand-alone)	*/
-
-
-/* #include <stdio.h>	*/
-/* #define eol 10	*/
+#define eol 10
 
 
 /*	Define the symbol table parameters	*/
@@ -71,10 +64,6 @@
 #define endextrn exttab+extblsz-namesize-1
 
 /* Possible types of exttab entries */
-/* Stored in the byte following zero terminating the name */
-
-#define rtsfunc 1
-#define userible types of exttab entries */
 /* Stored in the byte following zero terminating the name */
 
 #define rtsfunc 1
@@ -213,8 +202,6 @@ int	nxtlab,		/* next avail label # */
 	saveout,	/* holds output ptr when diverted to console	   */
 			/*					gtf 7/16/80 */
 	fnstart,	/* line# of start of current fn.	gtf 7/2/80 */
-	lineno,		/* line# in current file		gtf 7/2/80 **					gtf 7/16/80 */
-	fnstart,	/* line# of start of current fn.	gtf 7/2/80 */
 	lineno,		/* line# in current file		gtf 7/2/80 */
 	infunc,		/* "inside function" flag		gtf 7/2/80 */
 	savestart,	/* copy of fnstart "	"		gtf 7/16/80 */
@@ -288,15 +275,7 @@ abort()
 	closeout();
 	toconsole();
 	pl("Compilation aborted.");  nl();
-	exit();
-/* end abort */}
-
-
-/*					*/
-/*	Process all input text		*/);
-	toconsole();
-	pl("Compilation aborted.");  nl();
-	exit();
+	exit(1);
 /* end abort */}
 
 
@@ -442,7 +421,6 @@ errorsummary()
 
 hello()
 	{
-	clrscreen(); 	/* clear screen function */
 	nl();nl();		/* print banner */
 	pl(BANNER);
 	nl();
@@ -755,12 +733,6 @@ newfunc()
 		zret();
 		}
 	Zsp=0;			/* reset stack ptr again */
-	locptr=seturn, skip */
-				/* cleaning up the stack */
-		{modstk(0);
-		zret();
-		}
-	Zsp=0;			/* reset stack ptr again */
 	locptr=startloc;	/* deallocate all locals */
 	infunc=0;		/* not in fn. any more		gtf 7/2/80 */
 	}
@@ -938,7 +910,7 @@ doasm()
 	{
 	cmode=0;		/* mark mode as "asm" */
 	while (1)
-		{inline();	/* get and print lines */
+		{readline();	/* get and print lines */
 		if (match("#endasm")) break;	/* until... */
 		if(eof)break;
 		outstr(line);
@@ -1180,18 +1152,18 @@ inbyte()
 {
 	while(ch()==0)
 		{if (eof) return 0;
-		inline();
+		readline();
 		preprocess();
 		}
 	return gch();
 }
 inchar()
 {
-	if(ch()==0)inline();
+	if(ch()==0)readline();
 	if(eof)return 0;
 	return(gch());
 }
-inline()
+readline()
 {
 	int k,unit;
 	while(1)
@@ -1208,15 +1180,6 @@ inline()
 			{fclose(unit);
 			if(input2)endinclude();		/* gtf 7/16/80 */
 				else input=0;
-			}
-		if(lptr)
-			{if((ctext)&(cmode))
-				{comment();
-				outstr(line);
-				nl();
-				}
-			lptr=0;
-			relse input=0;
 			}
 		if(lptr)
 			{if((ctext)&(cmode))
@@ -1314,7 +1277,7 @@ precomm()
 			{inchar();inchar();
 			while(((ch()=='*')&
 				(nch()=='/'))==0)
-				{if(ch()==0)inline();
+				{if(ch()==0)readline();
 					else inchar();
 				if(eof)break;
 				}
@@ -1420,7 +1383,6 @@ char ptr[];
 
 
 	toconsole();
-	bell();
 	outstr("Line "); outdec(lineno); outstr(", ");
 	if(infunc==0)
 		outbyte('(');
@@ -1526,7 +1488,7 @@ amatch(lit,len)
 blanks()
 	{while(1)
 		{while(ch()==0)
-			{inline();
+			{readline();
 			preprocess();
 			if(eof)break;
 			}
@@ -1878,15 +1840,6 @@ heir10(lval)
 			return 0;
 			}
 		else if(lval[1])return 0;
-		else
-			{heir10at(lval);
-			return 0;
-			}
-		}
-	else 
-		{k=heir11(lval);
-		if(match("++"))
-	lse if(lval[1])return 0;
 		else
 			{heir10at(lval);
 			return 0;
@@ -2477,10 +2430,6 @@ zor()
 /*	(results in primary) */
 zxor()
 	{ol("XOR BX,DX");}
-/* 'And' the primary and secondary rerimary and seconday registers */
-/*	(results in primary) */
-zxor()
-	{ol("XOR BX,DX");}
 /* 'And' the primary and secondary registers */
 /*	(results in primary) */
 zand()
@@ -2546,10 +2495,3 @@ uge()
 
 
 /*	<<<<<  End of small-c:PC compiler  >>>>>	*/
-   r greater than or equal to (unsigned) */
-uge()
-	{callrts("ccuge");}
-
-
-/*	<<<<<  End of small-c:PC compiler  >>>>>	*/
-                                                                                                                                                                                                                                                                                                                                                                                                   

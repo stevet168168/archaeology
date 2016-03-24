@@ -287,21 +287,6 @@ QZPCDOS:
 	RET
 ;
 ;
-;	ouDOS
-QZPCDOS:
-	POP	CX
-	POP	DX
-	POP	AX
-	PUSH	AX
-	PUSH	DX
-	PUSH	CX
-	MOV	AH,AL
-	INT	21H
-	CBW
-	MOV	BX,AX
-	RET
-;
-;
 ;	out808X(port,AL)
 ;
 ;
@@ -532,21 +517,6 @@ QZPUTCHAR:
 	CMP	DL,EOL
 	JNZ	PUTC1
 	CALL	PUTLF
-PUTC1:
-	XOR	BH,BH
-	RET
-;
-;
-;	puts(cp)
-;
-;
-	PUBLIC	QZPUTS
-QZPUTS:
-	POP	CX
-	POP	BP
-	PUSH	BP
-	PUSH	CX
-	MOV	AH,PUTLF
 PUTC1:
 	XOR	BH,BH
 	RET
@@ -1097,6 +1067,3 @@ DUMMY	SEGMENT BYTE STACK 'dummy'
 	DB	128 DUP(?)
 DUMMY	ENDS
 	END	CCGO
-                                                                                                           Y	ENDS
-	END	CCGO
-                                                                                                                                                                                                                                                                                                                                                                           
