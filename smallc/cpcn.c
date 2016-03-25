@@ -169,7 +169,6 @@ int	nxtlab,		/* next avail label # */
 	cextern,	/* collecting external names flag */
 	Zsp,		/* compiler relative stk ptr */
 	argstk,		/* function arg sp */
-	ncmp,		/* # open compound statements */
 	errcnt,		/* # errors in compilation */
 	eof,		/* set non-zero on final input eof */
 	input,		/* iob # for input file */
@@ -180,16 +179,11 @@ int	nxtlab,		/* next avail label # */
 	lastst,		/* last executed statement type */
 	saveout,	/* holds output ptr when diverted to console	   */
 			/*					gtf 7/16/80 */
-	fnstart,	/* line# of start of current fn.	gtf 7/2/80 */
 	lineno,		/* line# in current file		gtf 7/2/80 */
-	infunc,		/* "inside function" flag		gtf 7/2/80 */
-	savestart,	/* copy of fnstart "	"		gtf 7/16/80 */
-	saveline,	/* copy of lineno  "	"		gtf 7/16/80 */
-	saveinfn;	/* copy of infunc  "	"		gtf 7/16/80 */
+	saveline;	/* copy of lineno  "	"		gtf 7/16/80 */
 
 
-char   *currfn,		/* ptr to symtab entry for current fn.	gtf 7/17/80 */
-       *savecurr;	/* copy of currfn for #include		gtf 7/17/80 */
+char   *currfn;		/* ptr to symtab entry for current fn.	gtf 7/17/80 */
 char	quote[2];	/* literal string for '"' */
 char	*cptr;		/* work ptr to any char buffer */
 
@@ -211,12 +205,9 @@ main()
 	eof=		/* not end-of-file yet */
 	input2=		/* no include file */
 	saveout=	/* no diverted output */
-	ncmp=		/* no open compound states */
 	lastst=		/* no last statement yet */
 	cextern=	/* no externs yet */
-	fnstart=	/* current "function" started at line 0 gtf 7/2/80 */
 	lineno=		/* no lines read from file		gtf 7/2/80 */
-	infunc=		/* not in function now			gtf 7/2/80 */
 	quote[1]=
 		0;		/*  ...all set to zero.... */
 	quote[0]='"';		/* fake a quote literal */
@@ -226,7 +217,6 @@ main()
 	openout();
 	header();
 	parse();
-	if (ncmp) error("missing closing bracket");
 	extdump();
 	dumpublics();
 	trailer();
@@ -381,19 +371,6 @@ openin()
 	}
 }
 
-
-/*					*/
-/*	Reset line count, etc.		*/
-/*			gtf 7/16/80	*/
-newfile()
-{
-	lineno  = 0;	/* no lines read */
-	fnstart = 0;	/* no fn. start yet. */
-	currfn  = NULL;	/* because no fn. yet */
-	infunc  = 0;	/* therefore not in fn. */
-/* end newfile */}
-
-
 /*					*/
 /*	Open an include file		*/
 /*					*/
@@ -401,11 +378,9 @@ doinclude()
 {
 	blanks();	/* skip over to name */
 
-
 	toconsole();					/* gtf 7/16/80 */
 	outstr("#include "); outstr(line+lptr); nl();
 	tofile();
-
 
 	if(input2)					/* gtf 7/16/80 */
 		error("Cannot nest include files");
@@ -413,12 +388,10 @@ doinclude()
 		{input2=0;
 		error("Open failure on include file");
 		}
-	else {	saveline = lineno;
-		savecurr = currfn;
-		saveinfn = infunc;
-		savestart= fnstart;
-		newfile();
-		}
+	else {
+		saveline = lineno;
+		lineno = 0;
+	}
 	kill();		/* clear rest of line */
 			/* so next read will come from */
 			/* new file (if open */
@@ -437,10 +410,7 @@ endinclude()
 
 	input2  = 0;
 	lineno  = saveline;
-	currfn  = savecurr;
-	infunc  = saveinfn;
-	fnstart = savestart;
-/* end endinclude */}
+}
 
 
 /*					*/
@@ -563,8 +533,6 @@ newfunc()
 		kill();	/* invalidate line */
 		return;
 		}
-	fnstart=lineno;		/* remember where fn began	gtf 7/2/80 */
-	infunc=1;		/* note, in function now.	gtf 7/16/80 */
 	if(currfn=findglb(n))	/* already in symbol table ? */
 		{if(currfn[ident]!=function)multidef(n);
 			/* already variable by that name */
@@ -617,18 +585,15 @@ newfunc()
 		}
 	Zsp=0;			/* reset stack ptr again */
 	locptr=startloc;	/* deallocate all locals */
-	infunc=0;		/* not in fn. any more		gtf 7/2/80 */
-	}
-/* ### cpcn-10 */
+}
+
 /*					*/
 /*	Declare argument types		*/
 /*					*/
-/* called from "newfunc" this routine adds an entry in the */
-/*	local symbol table for each named argument */
 getarg(t)		/* t = cchar or cint */
 	int t;
 	{
-	char n[namesize],c;int j;
+	char n[namesize];int j;
 	while(1)
 		{if(argstk==0)return;	/* no more args */
 		if(match("*"))j=pointer;
@@ -698,11 +663,9 @@ ns()	{if(match(";")==0)error("missing semicolon");}
 /*					*/
 /* allow any number of statements to fall between "{}" */
 compound()
-	{
-	++ncmp;		/* new level open */
+{
 	while (match("}")==0) statement(); /* do one */
-	--ncmp;		/* close current level */
-	}
+}
 /*					*/
 /*		"if" statement		*/
 /*					*/
@@ -849,14 +812,11 @@ illname()
 multidef(sname)
 	char *sname;
 {	error("already defined");
-	comment();
-	outstr(sname);nl();
 }
 needbrack(str)
 	char *str;
 {	if (match(str)==0)
 		{error("missing bracket");
-		comment();outstr(str);nl();
 		}
 }
 needlval()
@@ -884,8 +844,8 @@ findloc(sname)
 	return 0;
 }
 addglb(sname,id,typ,value)
-	char *sname,id,typ;
-	int value;
+	char *sname;
+	int id,typ,value;
 {	char *ptr;
 	if(cptr=findglb(sname))return cptr;
 	if(glbptr>=endglb)
@@ -903,8 +863,8 @@ addglb(sname,id,typ,value)
 	return cptr;
 }
 addloc(sname,id,typ,value)
-	char *sname,id,typ;
-	int value;
+	char *sname;
+	int id,typ,value;
 {	char *ptr;
 	if(cptr=findloc(sname))return cptr;
 	if(locptr>=endloc)
@@ -951,7 +911,7 @@ findext(sname)
 /* Test if next input string is legal symbol name */
 symname(sname)
 	char *sname;
-{	int k;char c;
+{	int k;
 	blanks();
 	if(alpha(ch())==0)return 0;
 	k=0;
@@ -975,23 +935,20 @@ printlabel(label)
 
 /* Test if given character is alpha */
 alpha(c)
-	char c;
+	int c;
 {
-	return(((c>='a')&(c<='z'))|
+	return ((c>='a')&(c<='z'))|
 		((c>='A')&(c<='Z'))|
-		(c=='_'));
+		(c=='_');
 }
-/* Test if given character is numeric */
-numeric(c)
-	char c;
-{
-	return((c>='0')&(c<='9'));
-}
+
 /* Test if given character is alphanumeric */
 an(c)
-	char c;
-{	return((alpha(c))|(numeric(c)));
+	int c;
+{
+	return alpha(c)|isdigit(c);
 }
+
 /* Print a carriage return and a string only to console */
 pl(str)
 	char *str;
@@ -1019,21 +976,24 @@ readwhile()
 	else return (wqptr-wqsiz);
  }
 ch()
-{	return(line[lptr]&127);
+{
+	return line[lptr];
 }
 nch()
-{	if(ch()==0)return 0;
-		else return(line[lptr+1]&127);
+{
+	if(ch()==0)return 0;
+		else return line[lptr+1];
 }
 gch()
-{	if(ch()==0)return 0;
-		else return(line[lptr++]&127);
+{
+	if(ch()==0)return 0;
+		else return line[lptr++];
 }
 kill()
 {	lptr=0;
 	line[lptr]=0;
 }
-/* ### cpcn-18 */
+
 inbyte()
 {
 	while(ch()==0)
@@ -1043,12 +1003,7 @@ inbyte()
 		}
 	return gch();
 }
-inchar()
-{
-	if(ch()==0)readline();
-	if(eof)return 0;
-	return(gch());
-}
+
 readline()
 {
 	int k,unit;
@@ -1073,13 +1028,11 @@ readline()
 			}
 		}
 }
-/* ### cpcn-19 */
-/*	>>>>>> start of cc4 <<<<<<<	*/
-
 
 preprocess()
-{	int k;
-	char c,sname[namesize];
+{
+	int c,k;
+	char sname[namesize];
 	if(cmode==0)return;
 	mptr=lptr=0;
 	while(ch())
@@ -1115,9 +1068,9 @@ preprocess()
 	while(line[lptr++]=mline[mptr++]);
 	lptr=0;
 	}
-/* ### cpcn-20 */
+
 keepch(c)
-	char c;
+	int c;
 {	mline[mptr]=c;
 	if(mptr<mpmax)mptr++;
 	return c;
@@ -1155,16 +1108,16 @@ preapos()
 			keepch(39);
 			}
 precomm()
-			{inchar();inchar();
+			{gch();gch();
 			while(((ch()=='*')&
 				(nch()=='/'))==0)
 				{if(ch()==0)readline();
-					else inchar();
+					else gch();
 				if(eof)break;
 				}
-			inchar();inchar();
+			gch();gch();
 			}
-/* ### cpcn-21 */
+
 addmac()
 {	char sname[namesize];
 	int k;
@@ -1180,7 +1133,7 @@ addmac()
 	if(macptr>=macmax)error("macro table full");
 	}
 putmac(c)
-	char c;
+	int c;
 {	macq[macptr]=c;
 	if(macptr<macmax)macptr++;
 	return c;
@@ -1199,26 +1152,22 @@ findmac(sname)
 		}
 	return 0;
 }
-/* ### cpcn-22 */
-/* direct output to console		gtf 7/16/80 */
+
 toconsole()
 {
 	saveout = output;
 	output = 0;
-/* end toconsole */}
+}
 
-
-/* direct output back to file		gtf 7/16/80 */
 tofile()
 {
 	if(saveout)
 		output = saveout;
 	saveout = 0;
-/* end tofile */}
-
+}
 
 outbyte(c)
-	char c;
+	int c;
 {
 	if(c==0)return 0;
 	if(output)
@@ -1322,7 +1271,6 @@ amatch(lit,len)
 	blanks();
 	if (k=astreq(line+lptr,lit,len))
 		{lptr=lptr+k;
-		while(an(ch())) inbyte();
 		return 1;
 		}
 	return 0;
@@ -1343,8 +1291,7 @@ blanks()
 outdec(number)
 	int number;
  {
-	int k,zs;
-	char c;
+	int c,k,zs;
 	zs = 0;
 	k=10000;
 	if (number<0)
@@ -1361,21 +1308,12 @@ outdec(number)
 		}
  }
 
-/* return the length of a string */
-strlen(s)
-	char *s;
-{
-	char *t;
-	t = s;
-	while(*s) s++;
-	return(s-t);
-}
-
 expression()
 {
 	int lval[2];
 	if(heir1(lval))rvalue(lval);
 }
+
 heir1(lval)
 	int lval[];
 {
@@ -1392,9 +1330,9 @@ heir1(lval)
 }
 heir2(lval)
 	int lval[];
-{	int k,lval2[2];
+{
+	int k,lval2[2];
 	k=heir3(lval);
-	blanks();
 	if(ch()!='|')return k;
 	if(k)rvalue(lval);
 	while(1)
@@ -1407,12 +1345,12 @@ heir2(lval)
 		else return 0;
 		}
 }
-/* ### cpcn-27 */
+
 heir3(lval)
 	int lval[];
-{	int k,lval2[2];
+{
+	int k,lval2[2];
 	k=heir4(lval);
-	blanks();
 	if(ch()!='^')return k;
 	if(k)rvalue(lval);
 	while(1)
@@ -1427,9 +1365,9 @@ heir3(lval)
 }
 heir4(lval)
 	int lval[];
-{	int k,lval2[2];
+{
+	int k,lval2[2];
 	k=heir5(lval);
-	blanks();
 	if(ch()!='&')return k;
 	if(k)rvalue(lval);
 	while(1)
@@ -1442,12 +1380,12 @@ heir4(lval)
 		else return 0;
 		}
 }
+
 heir5(lval)
 	int lval[];
 {
 	int k,lval2[2];
 	k=heir6(lval);
-	blanks();
 	if((streq(line+lptr,"==")==0)&
 		(streq(line+lptr,"!=")==0))return k;
 	if(k)rvalue(lval);
@@ -1467,47 +1405,37 @@ heir5(lval)
 		else return 0;
 		}
 }
-/* ### cpcn-28 */
+
 heir6(lval)
 	int lval[];
 {
 	int k;
 	k=heir7(lval);
-	blanks();
-	if((streq(line+lptr,"<")==0)&
-		(streq(line+lptr,">")==0)&
-		(streq(line+lptr,"<=")==0)&
-		(streq(line+lptr,">=")==0))return k;
-		if(streq(line+lptr,">>"))return k;
-		if(streq(line+lptr,"<<"))return k;
+	if((ch()!='<')&(ch()!='>'))return k;
 	if(k)rvalue(lval);
 	while(1)
 		{if (match("<="))
-			{if(heir6wrk(1,lval)) continue;
-			zle();
+			{if(heir6wrk(lval)) ule();
+			else zle();
 			}
 		else if (match(">="))
-			{if(heir6wrk(2,lval)) continue;
-			zge();
+			{if(heir6wrk(lval)) uge();
+			else zge();
 			}
-		else if((streq(line+lptr,"<"))&
-			(streq(line+lptr,"<<")==0))
-			{inbyte();
-			if(heir6wrk(3,lval)) continue;
-			zlt();
+		else if (match("<"))
+			{if(heir6wrk(lval)) ult();
+			else zlt();
 			}
-		else if((streq(line+lptr,">"))&
-			(streq(line+lptr,">>")==0))
-			{inbyte();
-			if(heir6wrk(4,lval)) continue;
-			zgt();
+		else if (match(">"))
+			{if(heir6wrk(lval)) ugt();
+			else zgt();
 			}
 		else return 0;
 		}
 }
-/* ### cpcn-29 */
-heir6wrk(k,lval)
-	int k,lval[];
+
+heir6wrk(lval)
+	int lval[];
 {
 	int lval2[2];
 	zpush();
@@ -1515,34 +1443,18 @@ heir6wrk(k,lval)
 	zpop();
 	if(cptr=lval[0])
 		if(cptr[ident]==pointer)
-			{heir6op(k);
 			return 1;
-			}
 	if(cptr=lval2[0])
 		if(cptr[ident]==pointer)
-			{heir6op(k);
 			return 1;
-			}
 	return 0;
 }
-heir6op(k)
-	int k;
-{
-	if(k==1) ule();
-	else if(k==2) uge();
-	     else if(k==3) ult();
-		  else ugt();
-}
-/* ### cpcn-30 */
-/*	>>>>>> start of cc6 <<<<<<	*/
-
 
 heir7(lval)
 	int lval[];
 {
 	int k,lval2[2];
 	k=heir8(lval);
-	blanks();
 	if((streq(line+lptr,">>")==0)&
 		(streq(line+lptr,"<<")==0))return k;
 	if(k)rvalue(lval);
@@ -1562,13 +1474,12 @@ heir7(lval)
 		else return 0;
 		}
 }
-/* ### cpcn-31 */
+
 heir8(lval)
 	int lval[];
 {
 	int k,lval2[2];
 	k=heir9(lval);
-	blanks();
 	if((ch()!='+')&(ch()!='-'))return k;
 	if(k)rvalue(lval);
 	while(1)
@@ -1595,13 +1506,12 @@ heir8(lval)
 		else return 0;
 		}
 }
-/* ### cpcn-32 */
+
 heir9(lval)
 	int lval[];
 {
 	int k,lval2[2];
 	k=heir10(lval);
-	blanks();
 	if((ch()!='*')&(ch()!='/')&
 		(ch()!='%'))return k;
 	if(k)rvalue(lval);
@@ -1627,7 +1537,7 @@ heir9(lval)
 		else return 0;
 		}
 }
-/* ### cpcn-33 */
+
 heir10(lval)
 	int lval[];
 {
@@ -1927,18 +1837,16 @@ constant(val)
 
 number(val)
 	int val[];
-{	int k,minus;char c;
+{	int k,minus;
 	k=minus=1;
 	while(k)
 		{k=0;
 		if (match("+")) k=1;
 		if (match("-")) {minus=(-minus);k=1;}
 		}
-	if(numeric(ch())==0)return 0;
-	while (numeric(ch()))
-		{c=inbyte();
-		k=k*10+(c-'0');
-		}
+	if(isdigit(ch())==0)return 0;
+	while (isdigit(ch()))
+		k=k*10+gch()-'0';
 	if (minus<0) k=(-k);
 	val[0]=k;
 	return 1;
@@ -1955,7 +1863,7 @@ pstr(val)
 }
 qstr(val)
 	int val[];
-{	char c;
+{
 	if (match(quote)==0) return 0;
 	val[0]=litptr;
 	while (ch()!='"')
@@ -1972,12 +1880,6 @@ qstr(val)
 	litq[litptr++]=0;
 	return 1;
 }
-
-/* Begin a comment line for the assembler */
-comment()
-{	outbyte(';');
-}
-
 
 /* Put out assembler info before any code is generated */
 header()
@@ -2060,7 +1962,7 @@ putmem(sym)
 /* Store the specified object type in the primary register */
 /*	at the address on the top of the stack */
 putstk(typeobj)
-	char typeobj;
+	int typeobj;
 {
 	zpop();
 	if (typeobj==cchar) {
