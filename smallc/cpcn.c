@@ -13,7 +13,6 @@
 
 
 #define NULL 0
-#define eol 10
 
 
 /*	Define the symbol table parameters	*/
@@ -184,7 +183,6 @@ int	nxtlab,		/* next avail label # */
 
 
 char   *currfn;		/* ptr to symtab entry for current fn.	gtf 7/17/80 */
-char	quote[2];	/* literal string for '"' */
 char	*cptr;		/* work ptr to any char buffer */
 
 
@@ -208,9 +206,7 @@ main()
 	lastst=		/* no last statement yet */
 	cextern=	/* no externs yet */
 	lineno=		/* no lines read from file		gtf 7/2/80 */
-	quote[1]=
 		0;		/*  ...all set to zero.... */
-	quote[0]='"';		/* fake a quote literal */
 	currfn=NULL;	/* no function yet			gtf 7/2/80 */
 	cmode=nxtlab=1;	/* enable preprocessing and reset label numbers */
 	openin();
@@ -954,7 +950,7 @@ pl(str)
 	char *str;
 {	int k;
 	k=0;
-	putchar(eol);
+	putchar('\n');
 	while(str[k])putchar(str[k++]);
 }
 addwhile(ptr)
@@ -1012,7 +1008,7 @@ readline()
 		if((unit=input2)==0)unit=input;
 		kill();
 		while((k=getc(unit))>0)
-			{if((k==eol)|(lptr>=linemax))break;
+			{if((k=='\n')|(lptr>=linemax))break;
 			line[lptr++]=k;
 			}
 		line[lptr]=0;	/* append null */
@@ -1036,11 +1032,11 @@ preprocess()
 	if(cmode==0)return;
 	mptr=lptr=0;
 	while(ch())
-		{if((ch()==' ')|(ch()==9))
+		{if((ch()==' ')|(ch()=='\t'))
 			predel();
 		else if(ch()=='"')
 			prequote();
-		else if(ch()==39)
+		else if(ch()=='\'')
 			preapos();
 		else if((ch()=='/')&(nch()=='*'))
 			precomm();
@@ -1064,49 +1060,80 @@ preprocess()
 		}
 	keepch(0);
 	if(mptr>=mpmax)error("line too long");
-	lptr=mptr=0;
-	while(line[lptr++]=mline[mptr++]);
+	strcpy(mline,line);
 	lptr=0;
-	}
+}
 
 keepch(c)
 	int c;
-{	mline[mptr]=c;
+{
+	mline[mptr]=c;
 	if(mptr<mpmax)mptr++;
 	return c;
 }
+
 predel()
-			{keepch(' ');
-			while((ch()==' ')|
-				(ch()==9))
-				gch();
-			}
+{
+	keepch(' ');
+	while ((ch()==' ')|(ch()=='\t')) {
+		gch();
+	}
+}
+
 prequote()
-			{keepch(ch());
+{
+	keepch(gch());
+	while (ch()!='"') {
+		if (ch()==0) {
+			error("missing quote");
+			break;
+		}
+		else if (ch()=='\\'){
 			gch();
-			while(ch()!='"')
-				{if(ch()==0)
-				  {error("missing quote");
-				  break;
-				  }
-				keepch(gch());
-				}
-			gch();
-			keepch('"');
+			if (ch()==0) {
+				error("missing quote");
+				break;
 			}
+			else {
+				keepch('\\');
+				keepch(gch());
+			}
+		}
+		else {
+			keepch(gch());
+		}
+	}
+	gch();
+	keepch('"');
+}
+
 preapos()
-			{keepch(39);
+{
+	keepch(gch());
+	while (ch()!='\'') {
+		if (ch()==0) {
+			error("missing apostrophe");
+			break;
+		}
+		else if (ch()=='\\'){
 			gch();
-			while(ch()!=39)
-				{if(ch()==0)
-				  {error("missing apostrophe");
-				  break;
-				  }
-				keepch(gch());
-				}
-			gch();
-			keepch(39);
+			if (ch()==0) {
+				error("missing apostrophe");
+				break;
 			}
+			else {
+				keepch('\\');
+				keepch(gch());
+			}
+		}
+		else {
+			keepch(gch());
+		}
+	}
+	gch();
+	keepch('\'');
+}
+
 precomm()
 			{gch();gch();
 			while(((ch()=='*')&
@@ -1128,7 +1155,7 @@ addmac()
 		}
 	k=0;
 	while(putmac(sname[k++]));
-	while(ch()==' ' | ch()==9) gch();
+	while(ch()==' ' | ch()=='\t') gch();
 	while(putmac(gch()));
 	if(macptr>=macmax)error("macro table full");
 	}
@@ -1195,11 +1222,11 @@ outasm(ptr)
 }
 
 nl()
-	{outbyte(eol);}
+	{outbyte('\n');}
 tab()
-	{outbyte(9);}
+	{outbyte('\t');}
 col()
-	{outbyte(58);}
+	{outbyte(':');}
 
 error(ptr)
 	char ptr[];
@@ -1284,7 +1311,7 @@ blanks()
 			if(eof)break;
 			}
 		if(ch()==' ')gch();
-		else if(ch()==9)gch();
+		else if(ch()=='\t')gch();
 		else return;
 		}
 	}
@@ -1851,32 +1878,66 @@ number(val)
 	val[0]=k;
 	return 1;
 }
+
+escape()
+{
+	int c;
+	c = gch();
+	if (c == 'n') {
+		return '\n';
+	}
+	else if (c == 't') {
+		return '\t';
+	}
+	else if (c == '\'' | c == '\"' | c == '\?' | c == '\\') {
+		return c;
+	}
+	else {
+		error("Invalid escape");
+		return c;
+	}
+}
+
 pstr(val)
 	int val[];
-{	int c,k;
+{
+	int c,k;
 	k=0;
-	if (match("'")==0) return 0;
-	while((c=gch())!=39)
-		k=c;
+	if (match("'")==0) {
+		return 0;
+	}
+	while ((c=gch())!='\'') {
+		if (c=='\\') {
+			k=escape();
+		}
+		else {
+			k=c;
+		}
+	}
 	val[0]=k;
 	return 1;
 }
+
 qstr(val)
 	int val[];
 {
-	if (match(quote)==0) return 0;
+	int c;
+	if (match("\"")==0) {
+		return 0;
+	}
 	val[0]=litptr;
-	while (ch()!='"')
-		{if(ch()==0)break;
-		if(litptr>=litmax)
-			{error("string space exhausted");
-			while(match(quote)==0)
-				if(gch()==0)break;
-			return 1;
-			}
-		litq[litptr++]=gch();
+	while ((c=gch())!='"') {
+		if (c=='\\') {
+			litq[litptr++]=escape();
 		}
-	gch();
+		else {
+			litq[litptr++]=c;
+		}
+		if (litptr>=litmax) {
+			error("string space exhausted");
+			abort();
+		}
+	}
 	litq[litptr++]=0;
 	return 1;
 }
