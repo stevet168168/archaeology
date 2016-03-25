@@ -1841,15 +1841,15 @@ constant(val)
 	int val[];
 {
 	if (number(val)) {
-		ot("mov $");
+		ot("movl $");
 		outdec(val[0]);
 	}
 	else if (pstr(val)) {
-		ot("mov $");
+		ot("movl $");
 		outdec(val[0]);
 	}
 	else if (qstr(val)) {
-		ot("mov $");
+		ot("movl $");
 		outdec(val[0]);
 		outbyte('+');
 		printlabel(litlab);
@@ -2171,7 +2171,7 @@ mult()
 /* Divide the secondary register by the primary */
 div()
 {
-	ol("xchg %ecx,%eax");
+	ol("xchgl %ecx,%eax");
 	ol("cltd");
 	ol("idivl %ecx");
 }
@@ -2180,7 +2180,7 @@ div()
 /*	by the primary */
 zmod()
 {
-	ol("xchg %ecx,%eax");
+	ol("xchgl %ecx,%eax");
 	ol("cltd");
 	ol("idivl %ecx");
 	ol("movl %edx,%eax");
@@ -2211,7 +2211,7 @@ zand()
 /* 	times in primary (results in primary) */
 asr()
 {
-	ol("xchg %ecx,%eax");
+	ol("xchgl %ecx,%eax");
 	ol("sarl %cl,%eax");
 }
 
@@ -2219,7 +2219,7 @@ asr()
 /*	times in primary (results in primary) */
 asl()
 {
-	ol("xchg %ecx,%eax");
+	ol("xchgl %ecx,%eax");
 	ol("sall %cl,%eax");
 }
 

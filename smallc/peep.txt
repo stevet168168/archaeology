@@ -1,0 +1,53 @@
+:loop
+
+/.*\n.*\n.*\n.*\n.*\n.*\n.*\n.*/!{N;bloop}
+
+s/\tsete %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjne .L/
+s/\tsetne %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tje .L/
+s/\tsetg %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjle .L/
+s/\tsetge %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjl .L/
+s/\tsetl %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjge .L/
+s/\tsetle %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjg .L/
+s/\tseta %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjbe .L/
+s/\tsetae %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjb .L/
+s/\tsetb %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tjae .L/
+s/\tsetbe %al\n\tmovzbl %al,%eax\n\torl %eax,%eax\n\tjz .L/\tja .L/
+
+s/\tmovl $0,%eax\n\tleal (,%eax,4),%eax\n/\tmovl $0,%eax\n/
+s/\tmovl $1,%eax\n\tleal (,%eax,4),%eax\n/\tmovl $4,%eax\n/
+s/\tmovl $2,%eax\n\tleal (,%eax,4),%eax\n/\tmovl $8,%eax\n/
+s/\tmovl $3,%eax\n\tleal (,%eax,4),%eax\n/\tmovl $12,%eax\n/
+
+s/\tpushl %eax\n\tmovl \([0-9A-Za-z_.$+-]*\),%eax\n\tpopl %ecx\n/\tmovl %eax,%ecx\n\tmovl \1,%eax\n/
+s/\tpushl %eax\n\tmovl \([0-9]*\)(%esp),%eax\n\tpopl %ecx\n/\tmovl %eax,%ecx\n\tmovl (\1-4)(%esp),%eax\n/
+
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\tcmpl %eax,%ecx\n/\tcmpl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\taddl %ecx,%eax\n/\taddl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\tsubl %ecx,%eax\n\tnegl %eax\n/\tsubl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\tandl %ecx,%eax\n/\tandl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\torl %ecx,%eax\n/\torl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\txorl %ecx,%eax\n/\txorl \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\timull %ecx,%eax\n/\timull \1,%eax\n/
+s/\tmovl %eax,%ecx\n\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\txchgl %ecx,%eax\n/\tmovl \1,%ecx\n/
+
+s/\taddl $0,%eax\n//
+
+s/\tleal \([0-9]*\)(%esp),%eax\n\tmovl (%eax),%eax\n/\tmovl \1(%esp),%eax\n/
+s/\tleal \([0-9]*\)(%esp),%eax\n\tmovl \([0-9()+-]*\)(%eax),%eax\n/\tmovl \1+\2(%esp),%eax\n/
+s/\tleal \([0-9]*\)(%esp),%eax\n\tmovsbl (%eax),%eax\n/\tmovsbl \1(%esp),%eax\n/
+s/\tleal \([0-9]*\)(%esp),%eax\n\tmovsbl \([0-9()+-]*\)(%eax),%eax\n/\tmovsbl \1+\2(%esp),%eax\n/
+
+s/\tmovl $\([0-9()+-]*\),%eax\n\taddl $\([0-9()+-]*\),%eax\n/\tmovl $\1+\2,%eax\n/
+s/\taddl $\([0-9()+-]*\),%esp\n\taddl $\([0-9()+-]*\),%esp\n/\taddl $\1+\2,%esp\n/
+
+s/\taddl $\([0-9()+-]*\),%eax\n\tmovl (%eax),%eax\n/\tmovl \1(%eax),%eax\n/
+s/\taddl $\([0-9()+-]*\),%eax\n\tmovsbl (%eax),%eax\n/\tmovsbl \1(%eax),%eax\n/
+
+s/\tmovl %eax,\([0-9A-Za-z_.$()%+-]*\)\n\tmovl \1,%eax\n/\tmovl %eax,\1\n/
+
+s/\`\tmovl \([0-9A-Za-z_.$()%+-]*\),%eax\n\tpushl %eax\n/\tpushl \1\n/
+
+tloop
+
+P
+D
