@@ -11995,15 +11995,7 @@ L2573:  POP     HL              ; restore the last bitmap start
         LD      C,B             ; B is now zero, so BC now zero.
 
 ;; S-SCR-STO
-L257D:  JP      L2AB2           ; to STK-STO-$ to store the string in
-                                ; workspace or a string with zero length.
-                                ; (value of DE doesn't matter in last case)
-
-; Note. this exit seems correct but the general-purpose routine S-STRING
-; that calls this one will also stack any of its string results so this
-; leads to a double storing of the result in this case.
-; The instruction at L257D should just be a RET.
-; credit Stephen Kelly and others, 1982.
+L257D:  RET
 
 ; -------------
 ; Scanning ATTR
@@ -15145,6 +15137,7 @@ L2E1E:  PUSH    DE              ; save the part before decimal point.
 
 ;; PF-SMALL
 L2E24:  RST     28H             ;; FP-CALC       int x = 0.
+	DEFB    $02             ;;delete
 L2E25:  DEFB    $E2             ;;get-mem-2      int x = 0, x-int x.
         DEFB    $38             ;;end-calc
 
