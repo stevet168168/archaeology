@@ -3080,7 +3080,7 @@ L0A23:  INC     C               ; move left one column.
 
         INC     B               ; move up one screen line
         LD      C,$02           ; the rightmost column position.
-        LD      A,$18           ; Note. This should be $19
+        LD      A,$19           ; Note. This should be $19
                                 ; credit. Dr. Frank O'Hara, 1982
 
         CP      B               ; has position moved past top of screen ?
@@ -3113,14 +3113,13 @@ L0A3D:  LD      A,($5C91)       ; fetch P_FLAG value
 
         LD      (IY+$57),$01    ; temporarily set P_FLAG 'OVER 1'.
         LD      A,$20           ; prepare a space.
-        CALL    L0B65           ; routine PO-CHAR to print it.
-                                ; Note. could be PO-ABLE which would update
-                                ; the column position.
+        CALL    L0AD9           ; routine PO-ABLE to print it
+                                ; and update the column position
 
         POP     AF              ; restore the permanent flag.
         LD      ($5C91),A       ; and restore system variable P_FLAG
 
-        RET                     ; return without updating column position
+        RET
 
 ; -----------------------
 ; Perform carriage return
