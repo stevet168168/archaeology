@@ -535,18 +535,18 @@ declloc(typ)		/* typ is cchar or cint */
 /*					*/
 needsub()
 	{
-	int num[1];
+	int num;
 	if(match("]"))return 0;	/* null size */
-	if (number(num)==0)	/* go after a number */
+	if (number(&num)==0)	/* go after a number */
 		{error("must be constant");	/* it isn't */
-		num[0]=1;		/* so force one */
+		num=1;		/* so force one */
 		}
-	if (num[0]<0)
+	if (num<0)
 		{error("negative size illegal");
-		num[0]=(-num[0]);
+		num=-num;
 		}
 	needbrack("]");		/* force single dimension */
-	return num[0];		/* and return size */
+	return num;		/* and return size */
 	}
 /*					*/
 /* ### cpcn-9 */
@@ -1740,10 +1740,7 @@ heir10at(lval)
 	int lval[];
 {
 	char *ptr;
-	ot("movl $");
-	outname(ptr=lval[0]);
-	outstr(",%eax");
-	nl();
+	getloc(ptr=lval[0]);
 	lval[1]=ptr[type];
 }
 
@@ -1835,10 +1832,7 @@ heir11(lval)
 		}
 	if(ptr==0)return k;
 	if(ptr[ident]==function) {
-		ot("movl $ ");
-		outname(ptr);
-		outstr(",%eax");
-		nl();
+		getloc(ptr);
 		return 0;
 	}
 	return k;
@@ -1846,46 +1840,43 @@ heir11(lval)
 
 primary(lval)
 	int *lval;
-{	char *ptr,sname[namesize];int num[1];
-	int k;
-	if(match("("))
-		{k=heir1(lval);
+{
+	char *ptr,sname[namesize];
+	int k,num;
+	if (match("(")) {
+		k=heir1(lval);
 		needbrack(")");
 		return k;
+	}
+	else if (symname(sname)) {
+		ptr=findloc(sname);
+		if (ptr==NULL) {
+			ptr=findglb(sname);
+			if (ptr==NULL) {
+				ptr=addglb(sname,function,cint,0);
+			}
 		}
-	if(symname(sname))
-		{if(ptr=findloc(sname))
-			{getloc(ptr);
-			lval[0]=ptr;
-			lval[1]=ptr[type];
-			if(ptr[ident]==pointer)lval[1]=cint;
-			if(ptr[ident]==array)return 0;
-				else return 1;
-			}
-		if(ptr=findglb(sname))
-			if(ptr[ident]!=function)
-			{lval[0]=ptr;
-			lval[1]=0;
-			if(ptr[ident]!=array)return 1;
-			ot("movl $");
-			outname(ptr);
-			outstr(",%eax");
-			nl();
-			lval[1]=ptr[type];
-			return 0;
-			}
-		ptr=addglb(sname,function,cint,0);
 		lval[0]=ptr;
 		lval[1]=0;
-		return 0;
+		if (ptr[ident]==array) {
+			getloc(ptr);
+			lval[1]=ptr[type];
+			return 0;
 		}
-	if(constant(num))
-		return(lval[0]=lval[1]=0);
+		else if (ptr[ident]==function) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
 	else {
-		error("invalid expression");
-		ol("xorl %eax,%eax");
-		junk();
-		return 0;
+		if (constant(&num)==0) {
+			error("invalid expression");
+			ol("xorl %eax,%eax");
+			junk();
+		}
+		return lval[0]=lval[1]=0;
 	}
 }
 
@@ -2016,7 +2007,13 @@ getmem(sym)
 	else {
 		ot("movl ");
 	}
-	outname(sym+name);
+	if (sym[storage]==stkloc) {
+		outdec((sym[offset]&255)+(sym[offset+1]<<8)-Zsp);
+		outstr("(%esp)");
+	}
+	else {
+		outname(sym+name);
+	}
 	outstr(",%eax");
 	nl();
 }
@@ -2026,9 +2023,16 @@ getmem(sym)
 getloc(sym)
 	char *sym;
 {
-	ot("leal ");
-	outdec((sym[offset]&255)+(sym[offset+1]<<8)-Zsp);
-	outstr("(%esp),%eax");
+	if (sym[storage]==stkloc) {
+		ot("leal ");
+		outdec((sym[offset]&255)+(sym[offset+1]<<8)-Zsp);
+		outstr("(%esp)");
+	}
+	else {
+		ot("movl $");
+		outname(sym+name);
+	}
+	outstr(",%eax");
 	nl();
 }
 
@@ -2043,7 +2047,13 @@ putmem(sym)
 	else {
 		ot("movl %eax,");
 	}
-	outname(sym+name);
+	if (sym[storage]==stkloc) {
+		outdec((sym[offset]&255)+(sym[offset+1]<<8)-Zsp);
+		outstr("(%esp)");
+	}
+	else {
+		outname(sym+name);
+	}
 	nl();
 }
 
