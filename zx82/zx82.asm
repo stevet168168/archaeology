@@ -3132,8 +3132,8 @@ L0A4F:  BIT     1,(IY+$01)      ; test FLAGS  - is printer in use ?
                                 ; the print position.
 
         LD      C,$21           ; the leftmost column position.
-        CALL    L0C55           ; routine PO-SCR handles any scrolling required.
         DEC     B               ; to next screen line.
+        CALL    L0C55           ; routine PO-SCR handles any scrolling required.
         JP      L0DD9           ; jump forward to CL-SET to store new position.
 
 ; -----------
@@ -3489,27 +3489,20 @@ L0B76:  LD      H,$00           ; set high byte to 0
 ;; PR-ALL
 L0B7F:  LD      A,C             ; column to A
         DEC     A               ; move right
-        LD      A,$21           ; pre-load with leftmost position
-        JR      NZ,L0B93        ; but if not zero to PR-ALL-1
+        JR      NZ,N0B99        ; but if not zero to PR-ALL-1
 
         DEC     B               ; down one line
-        LD      C,A             ; load C with $21
-        BIT     1,(IY+$01)      ; test FLAGS  - Is printer in use
-        JR      Z,L0B93         ; to PR-ALL-1 if not
-
+        LD      C,$21           ; load C with $21
         PUSH    DE              ; save source address
-        CALL    L0ECD           ; routine COPY-BUFF outputs line to printer
-        POP     DE              ; restore character source address
-        LD      A,C             ; the new column number ($21) to C
+        BIT     1,(IY+$01)      ; test FLAGS  - Is printer in use
+
+        CALL    NZ,L0ECD        ; routine COPY-BUFF outputs line to printer
+
+        CALL    L0C55           ; routine PO-SCR considers scrolling
+        POP     DE              ; restore source
 
 ;; PR-ALL-1
-L0B93:  CP      C               ; this test is really for screen - new line ?
-        PUSH    DE              ; save source
-
-        CALL    Z,L0C55         ; routine PO-SCR considers scrolling
-
-        POP     DE              ; restore source
-        PUSH    BC              ; save line/column
+N0B99:  PUSH    BC              ; save line/column
         PUSH    HL              ; and destination
         LD      A,($5C91)       ; fetch P_FLAG to accumulator
         LD      B,$FF           ; prepare OVER mask in B.
