@@ -464,17 +464,17 @@ L0095:  DEFB    '?'+$80
         DEFB    'W'+$80
         DEFM    "BORDE"
         DEFB    'R'+$80
-        DEFM    "CONTINU"
-        DEFB    'E'+$80
+        DEFM    "CON"
+        DEFB    'T'+$80
         DEFM    "DI"
         DEFB    'M'+$80
         DEFM    "RE"
         DEFB    'M'+$80
         DEFM    "FO"
         DEFB    'R'+$80
-        DEFM    "GO T"
+        DEFM    "GOT"
         DEFB    'O'+$80
-        DEFM    "GO SU"
+        DEFM    "GOSU"
         DEFB    'B'+$80
         DEFM    "INPU"
         DEFB    'T'+$80
