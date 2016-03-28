@@ -3132,7 +3132,6 @@ L0A4F:  BIT     1,(IY+$01)      ; test FLAGS  - is printer in use ?
                                 ; the print position.
 
         LD      C,$21           ; the leftmost column position.
-        CALL    L0C55           ; routine PO-SCR handles any scrolling required.
         DEC     B               ; to next screen line.
         JP      L0DD9           ; jump forward to CL-SET to store new position.
 
