@@ -886,7 +886,7 @@ L02C6:  BIT     7,(HL)          ; is it free ?  (i.e. $FF)
 
 ;; K-CH-SET
 L02D1:  LD      A,L             ; make a copy of the low address byte.
-        LD      HL,$5C04        ; point to KSTATE-4
+        LD      HL,KSTATE+$04   ; point to KSTATE-4
                                 ; (ld l,$04 would do)
         CP      L               ; have both sets been considered ?
         JR      NZ,L02C6        ; back to K-ST-LOOP to consider this 2nd set
@@ -904,7 +904,7 @@ L02D1:  LD      A,L             ; make a copy of the low address byte.
 ;   if not consider the second key map.
 
         EX      DE,HL           ; save kstate-0 in de
-        LD      HL,$5C04        ; point to KSTATE-4
+        LD      HL,KSTATE+$04   ; point to KSTATE-4
         CP      (HL)            ; does the main key code match ?
         JR      Z,L0310         ; forward to K-REPEAT if so
 
@@ -3244,7 +3244,7 @@ L0A69:  LD      A,$3F           ; prepare the character '?'.
 
 ;; PO-TV-2
 L0A6D:  LD      DE,L0A87        ; address: PO-CONT will be next output routine
-        LD      ($5C0F),A       ; store first operand in TVDATA-hi
+        LD      (TVDATA+1),A    ; store first operand in TVDATA-hi
         JR      L0A80           ; forward to PO-CHANGE >>
 
 ; ---
@@ -4022,7 +4022,7 @@ L0D1C:  PUSH    AF              ; save scroll number.
         LD      A,B             ; transfer to A
         INC     A               ; and increment
         LD      (HL),A          ; then put back.
-        LD      HL,$5C89        ; address S_POSN_hi - line
+        LD      HL,S_POSN+1     ; address S_POSN_hi - line
         CP      (HL)            ; compare
         JR      C,L0D2D         ; forward to PO-SCR-4B if scrolling required
 
@@ -5067,7 +5067,7 @@ L1059:  BIT     5,(IY+FLAGX-ERR_NR)
         CALL    L196E           ; routine LINE-ADDR gets address
         EX      DE,HL           ; and previous in DE
         CALL    L1695           ; routine LINE-NO gets prev line number
-        LD      HL,$5C4A        ; set HL to E_PPC_hi as next routine stores
+        LD      HL,E_PPC+1      ; set HL to E_PPC_hi as next routine stores
                                 ; top first.
         CALL    L191C           ; routine LN-STORE loads DE value to HL
                                 ; high byte first - E_PPC_lo takes E
@@ -5350,7 +5350,7 @@ L111D:  CALL    L0D4D           ; routine TEMPS sets temporary attributes.
 ; text from a previous print may follow this line and requires blanking.
 
 ;; ED-BLANK
-L1150:  LD      A,($5C8B)       ; fetch SPOSNL_hi is current line
+L1150:  LD      A,(SPOSNL+1)    ; fetch SPOSNL_hi is current line
         SUB     D               ; compare with old
         JR      C,L117C         ; forward to ED-C-DONE if no blanking
 
@@ -5868,7 +5868,7 @@ L1313:  PUSH    AF              ; save the error number.
                                 ; function is currently being evaluated.
 
         LD      HL,$0001        ; explicit - inc hl would do.
-        LD      ($5C16),HL      ; ensure STRMS-00 is keyboard.
+        LD      (STRMS+$06),HL  ; ensure STRMS-00 is keyboard.
 
         CALL    L16B0           ; routine SET-MIN clears workspace etc.
         RES     5,(IY+FLAGX-ERR_NR)
@@ -6280,7 +6280,7 @@ L15F7:  LD      E,(HL)          ; put the low byte in E.
 
 ;; CHAN-OPEN
 L1601:  ADD     A,A             ; double the stream ($FF will become $FE etc.)
-        ADD     A,$16           ; add the offset to stream 0 from $5C00
+        ADD     A,STRMS+6-KSTATE; add the offset to stream 0 from $5C00
         LD      L,A             ; result to L
         LD      H,$5C           ; now form the address in STRMS area.
         LD      E,(HL)          ; fetch low byte of CHANS offset
@@ -11247,7 +11247,7 @@ L235A:  RST     28H             ;; FP-CALC      x, y, r, hc.
 
 ;   Use the exponent manipulating trick again to double the value of mem-2.
 
-        INC     (IY+MEMBOT+&0A-ERR_NR)
+        INC     (IY+MEMBOT+$0A-ERR_NR)
                                 ; Increment MEM-2-1st doubling half chord.
 
 ;   Note. this first vertical chord is drawn at the radius so circles are
@@ -11572,7 +11572,7 @@ L23C1:  CALL    L247D           ; routine CD-PRMS1
         DEFB    $01             ;;exchange      tx, y.
         DEFB    $38             ;;end-calc      tx, y.
 
-        LD      A,($5C7E)       ; Fetch System Variable COORDS-y
+        LD      A,(COORDS+1)    ; Fetch System Variable COORDS-y
         CALL    L2D28           ; routine STACK-A
 
         RST     28H             ;; FP-CALC      tx, y, last-y.
@@ -11708,7 +11708,7 @@ L2439:  PUSH    BC              ; Preserve the arc counter on the machine stack.
         DEFB    $E0             ;;get-mem-0     ax, ay, Dx, ay.
         DEFB    $38             ;;end-calc      ax, ay, Dx, ay.
 
-        LD      A,($5C7E)       ; COORDS-y      last y (integer iy 0-175)
+        LD      A,(COORDS+1)    ; COORDS-y      last y (integer iy 0-175)
         CALL    L2D28           ; routine STACK-A
 
         RST     28H             ;; FP-CALC      ax, ay, Dx, ay, iy.
@@ -11757,7 +11757,7 @@ L245F:  RST     28H             ;; FP-CALC      tx, ty, ax, ay.
         DEFB    $01             ;;exchange      rx, ty.
         DEFB    $38             ;;end-calc      rx, ty.
 
-        LD      A,($5C7E)       ; COORDS-y
+        LD      A,(COORDS+1)    ; COORDS-y
         CALL    L2D28           ; routine STACK-A
 
         RST     28H             ;; FP-CALC      rx, ty, coords_y
@@ -13389,7 +13389,7 @@ L28DE:  RST     20H             ; NEXT-CHAR advances past '$'
                                 ; update FLAGS - signal string result.
 
 ;; V-TEST-FN
-L28E3:  LD      A,($5C0C)       ; load A with DEFADD_hi
+L28E3:  LD      A,(DEFADD+1)    ; load A with DEFADD_hi
         AND     A               ; and test for zero.
         JR      Z,L28EF         ; forward to V-RUN/SYN if a defined function
                                 ; is not being evaluated.
@@ -15393,9 +15393,9 @@ L2E25:  DEFB    $E2             ;;get-mem-2      int x = 0, x-int x.
         CALL    L2DC1           ; routine LOG(2^A) calculates leading digits.
 
         LD      D,A             ; transfer count to D
-        LD      A,($5CAC)       ; fetch total MEM-5-1
+        LD      A,(MEMBOT+$1A)  ; fetch total MEM-5-2
         SUB     D               ;
-        LD      ($5CAC),A       ; MEM-5-1
+        LD      (MEMBOT+$1A),A  ; MEM-5-2
         LD      A,D             ; 
         CALL    L2D4F           ; routine E-TO-FP
 
@@ -15410,13 +15410,13 @@ L2E25:  DEFB    $E2             ;;get-mem-2      int x = 0, x-int x.
         CALL    L2DD5           ; routine FP-TO-A
 
         PUSH    HL              ; save HL
-        LD      ($5CA1),A       ; MEM-3-1
+        LD      (MEMBOT+$0F),A  ; MEM-3-1
         DEC     A               ;
         RLA                     ;
         SBC     A,A             ;
         INC     A               ;
 
-        LD      HL,$5CAB        ; address MEM-5-1 leading digit counter
+        LD      HL,MEMBOT+$19   ; address MEM-5-1 leading digit counter
         LD      (HL),A          ; store counter
         INC     HL              ; address MEM-5-2 total digits
         ADD     A,(HL)          ; add counter to contents
@@ -15443,7 +15443,7 @@ L2E56:  SUB     $80             ; make exponent positive
         CALL    L2DC1           ; routine LOG(2^A)
         SUB     $07             ;
         LD      B,A             ;
-        LD      HL,$5CAC        ; address MEM-5-1 the leading digits counter.
+        LD      HL,MEMBOT+$1A   ; address MEM-5-2 the leading digits counter.
         ADD     A,(HL)          ; add A to contents
         LD      (HL),A          ; store updated value.
         LD      A,B             ; 
@@ -15475,7 +15475,7 @@ L2E7B:  SLA     E               ;  C<xxxxxxxx<0
         RL      D               ;  C<xxxxxxxx<C
         EXX                     ;
 
-        LD      HL,$5CAA        ; set HL to mem-4-5th last byte of buffer
+        LD      HL,MEMBOT+$18   ; set HL to mem-4-5th last byte of buffer
         LD      C,$05           ; set byte count to 5 -  10 nibbles
 
 ;; PF-BYTES
@@ -15504,8 +15504,8 @@ L2E8A:  LD      A,(HL)          ; fetch 0 or prev value
 ; ( or in the case of mem-5 will become zero as a result of RLD instruction )
 
         XOR     A               ; clear to accept
-        LD      HL,$5CA6        ; address MEM-4-0 byte destination.
-        LD      DE,$5CA1        ; address MEM-3-0 nibble source.
+        LD      HL,MEMBOT+$14   ; address MEM-4-0 byte destination.
+        LD      DE,MEMBOT+$0F   ; address MEM-3-0 nibble source.
         LD      B,$09           ; the count is 9 (not ten) as the first 
                                 ; nibble is known to be blank.
 
@@ -15539,8 +15539,10 @@ L2EA1:  RLD                     ; pick up leftmost nibble from (HL)
 ;; PF-INSERT
 L2EA9:  LD      (DE),A          ; insert digit at destination
         INC     DE              ; increase the destination pointer
-        INC     (IY+$71)        ; increment MEM-5-1st  digit counter
-        INC     (IY+$72)        ; increment MEM-5-2nd  leading digit counter
+        INC     (IY+MEMBOT+$19-ERR_NR)
+                                ; increment MEM-5-1st  digit counter
+        INC     (IY+MEMBOT+$1A-ERR_NR)
+                                ; increment MEM-5-2nd  leading digit counter
         LD      C,$00           ; set flag to zero indicating that any 
                                 ; subsequent zeros are significant and not 
                                 ; leading.
@@ -15562,13 +15564,15 @@ L2EB8:  DJNZ    L2EA1           ; decrement the nibble count, back to PF-DIGITS
 ; if nine digits complete then the last one is rounded up as the number will
 ; be printed using E-format notation
 
-        LD      A,($5CAB)       ; fetch digit count from MEM-5-1st
+        LD      A,(MEMBOT+$19)  ; fetch digit count from MEM-5-1st
         SUB     $09             ; subtract 9 - max possible
         JR      C,L2ECB         ; forward if less to PF-MORE
 
-        DEC     (IY+$71)        ; decrement digit counter MEM-5-1st to 8
+        DEC     (IY+MEMBOT+$19-ERR_NR)
+                                ; decrement digit counter MEM-5-1st to 8
         LD      A,$04           ; load A with the value 4.
-        CP      (IY+$6F)        ; compare with MEM-4-4th - the ninth digit
+        CP      (IY+MEMBOT+$17-ERR_NR)
+                                ; compare with MEM-4-4th - the ninth digit
         JR      L2F0C           ; forward to PF-ROUND
                                 ; to consider rounding.
 
@@ -15594,7 +15598,8 @@ L2ECF:  EX      DE,HL           ;
         CALL    L2FDD           ; routine SHIFT-FP
 
 ;; PF-FRN-LP
-L2EDF:  LD      A,(IY+$71)      ; MEM-5-1st
+L2EDF:  LD      A,(IY+MEMBOT+$19-ERR_NR)
+                                ; MEM-5-1st
         CP      $08             ;
         JR      C,L2EEC         ; to PF-FR-DGT
 
@@ -15620,12 +15625,14 @@ L2EEF:  LD      A,E             ;
         POP     BC              ;
         DJNZ    L2EEF           ; to PF-FR-EXX
 
-        LD      HL,$5CA1        ; MEM-3
+        LD      HL,MEMBOT+$0F   ; MEM-3
         LD      A,C             ;
-        LD      C,(IY+$71)      ; MEM-5-1st
+        LD      C,(IY+MEMBOT+$19-ERR_NR)
+                                ; MEM-5-1st
         ADD     HL,BC           ;
         LD      (HL),A          ;
-        INC     (IY+$71)        ; MEM-5-1st
+        INC     (IY+MEMBOT+$19-ERR_NR)
+                                ; MEM-5-1st
         JR      L2EDF           ; to PF-FRN-LP
 
 ; ----------------
@@ -15638,8 +15645,9 @@ L2EEF:  LD      A,E             ;
 
 ;; PF-ROUND
 L2F0C:  PUSH    AF              ; save A and flags
-        LD      HL,$5CA1        ; address MEM-3 start of digits
-        LD      C,(IY+$71)      ; MEM-5-1st No. of digits to C
+        LD      HL,MEMBOT+$0F   ; address MEM-3 start of digits
+        LD      C,(IY+MEMBOT+$19-ERR_NR)
+                                ; MEM-5-1st No. of digits to C
         LD      B,$00           ; prepare to add
         ADD     HL,BC           ; address last digit + 1
         LD      B,C             ; No. of digits to B counter
@@ -15667,11 +15675,13 @@ L2F25:  DJNZ    L2F18           ; loop back to PF-RND-LP
         LD      (HL),$01        ; load first location with digit 1.
         INC     B               ; make B hold 1 also.
                                 ; could save an instruction byte here.
-        INC     (IY+$72)        ; make MEM-5-2nd hold 1.
+        INC     (IY+MEMBOT+$1A-ERR_NR)
+                                ; make MEM-5-2nd hold 1.
                                 ; and proceed to initialize total digits to 1.
 
 ;; PF-COUNT
-L2F2D:  LD      (IY+$71),B      ; MEM-5-1st
+L2F2D:  LD      (IY+MEMBOT+$19-ERR_NR),B
+                                ; MEM-5-1st
 
 ; now balance the calculator stack by deleting  it
 
@@ -15687,9 +15697,9 @@ L2F2D:  LD      (IY+$71),B      ; MEM-5-1st
         POP     HL              ; restore next literal pointer.
         EXX                     ;
 
-        LD      BC,($5CAB)      ; set C to MEM-5-1st digit counter.
+        LD      BC,(MEMBOT+$19) ; set C to MEM-5-1st digit counter.
                                 ; set B to MEM-5-2nd leading digit counter.
-        LD      HL,$5CA1        ; set HL to start of digits at MEM-3-1
+        LD      HL,MEMBOT+$0F   ; set HL to start of digits at MEM-3-1
         LD      A,B             ;
         CP      $09             ;
         JR      C,L2F46         ; to PF-NOT-E
@@ -17078,7 +17088,7 @@ L338E:  LD      DE,L32D7        ; Address: tbl-addrs
         PUSH    DE              ; now address of routine
         EXX                     ; main set
                                 ; avoid using IY register.
-        LD      BC,($5C66)      ; STKEND_hi
+        LD      BC,(STKEND+1)   ; STKEND_hi
                                 ; nothing much goes to C but BREG to B
                                 ; and continue into next ret instruction
                                 ; which has a dual identity
