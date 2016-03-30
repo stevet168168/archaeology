@@ -74,6 +74,7 @@ MEMBOT: EQU     $5C92
 NMIADD: EQU     $5CB0
 RAMTOP: EQU     $5CB2
 P_RAMT: EQU     $5CB4
+SV_END: EQU     $5CB6
 
 ;*****************************************
 ;** Part 1. RESTART ROUTINES AND TABLES **
@@ -5541,7 +5542,7 @@ L121C:
 ;   in a Warm Restart scenario, to produce a report code, leaving any program 
 ;   intact.
 
-        LD      HL,$5CB6        ; The address of the channels - initially
+        LD      HL,SV_END       ; The address of the channels - initially
                                 ; following system variables.
         LD      (CHANS),HL      ; Set the CHANS system variable.
 
