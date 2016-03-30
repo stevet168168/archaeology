@@ -3096,8 +3096,7 @@ L09F4:  CALL    L0B03           ; routine PO-FETCH fetches print position
         PUSH    HL              ; push the address.
 
         JP      L0B03           ; Jump forward to PO-FETCH, 
-                                ; as the screen/printer position has been 
-                                ; disturbed, and then indirectly to the PO-STORE
+                                ; and then indirectly to the PO-STORE
                                 ; routine on stack.
 
 ; -----------------------------
@@ -3110,7 +3109,7 @@ L09F4:  CALL    L0B03           ; routine PO-FETCH fetches print position
 ;; ctlchrtab
 L0A11:  DEFB    L0A5F - $       ; 06d offset $4E to Address: PO-COMMA
         DEFB    L0A69 - $       ; 07d offset $57 to Address: PO-QUEST
-        DEFB    L0A23 - $       ; 08d offset $10 to Address: PO-BACK-1
+        DEFB    L0A23 - $       ; 08d offset $10 to Address: PO-BACK
         DEFB    L0A3D - $       ; 09d offset $29 to Address: PO-RIGHT
         DEFB    L0A69 - $       ; 10d offset $54 to Address: PO-QUEST
         DEFB    L0A69 - $       ; 11d offset $53 to Address: PO-QUEST
@@ -3132,19 +3131,12 @@ L0A11:  DEFB    L0A5F - $       ; 06d offset $4E to Address: PO-COMMA
 ; THE 'CURSOR LEFT' ROUTINE
 ; -------------------------
 ;   Backspace and up a line if that action is from the left of screen.
-;   For ZX printer backspace up to first column but not beyond.
 
-;; PO-BACK-1
+;; PO-BACK
 L0A23:  INC     C               ; move left one column.
         LD      A,$22           ; value $21 is leftmost column.
         CP      C               ; have we passed ?
-        JR      NZ,L0A3A        ; to PO-BACK-3 if not and store new position.
-
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        JR      NZ,L0A38        ; to PO-BACK-2 if so, as we are unable to
-                                ; backspace from the leftmost position.
-
+        JP      NZ,L0DD9        ; to CL-SET if not to store new position.
 
         INC     B               ; move up one screen line
         LD      C,$02           ; the rightmost column position.
@@ -3152,16 +3144,12 @@ L0A23:  INC     C               ; move left one column.
                                 ; credit. Dr. Frank O'Hara, 1982
 
         CP      B               ; has position moved past top of screen ?
-        JR      NZ,L0A3A        ; to PO-BACK-3 if not and store new position.
+        JP      NZ,L0DD9        ; to CL-SET if not to store new position.
 
         DEC     B               ; else back to $19.
-
-;; PO-BACK-2
-L0A38:  LD      C,$21           ; the leftmost column position.
-
-;; PO-BACK-3
-L0A3A:  JP      L0DD9           ; to CL-SET and PO-STORE to save new
-                                ; position in system variables.
+        LD      C,$21           ; the leftmost column position.
+        JP      L0DD9           ; to CL-SET and PO-STORE to store new
+                                ; position.
 
 ; --------------------------
 ; THE 'CURSOR RIGHT' ROUTINE
@@ -3187,15 +3175,10 @@ L0A3D:  LD      A,(P_FLAG)      ; fetch P_FLAG value
 ; -----------------------
 ; Perform carriage return
 ; -----------------------
-; A carriage return is 'printed' to screen or printer buffer.
+; A carriage return is 'printed' to screen.
 
 ;; PO-ENTER
-L0A4F:  BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        JP      NZ,L0ECD        ; to COPY-BUFF if so, to flush buffer and reset
-                                ; the print position.
-
-        LD      C,$21           ; the leftmost column position.
+L0A4F:  LD      C,$21           ; the leftmost column position.
         DEC     B               ; to next screen line.
         JP      L0DD9           ; jump forward to CL-SET to store new position.
 
@@ -3285,11 +3268,6 @@ L0A87:  LD      DE,L09F4        ; Address: PRINT-OUT
 
         ADD     A,$02           ; transform to system range $02-$21
         LD      C,A             ; and place in column register.
-
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        JR      NZ,L0ABF        ; to PO-AT-SET as line can be ignored.
-
         LD      A,$16           ; 22 decimal
         SUB     B               ; subtract line number to reverse
                                 ; 0 - 22 becomes 22 - 0.
@@ -3362,14 +3340,10 @@ L0AD9:  CALL    L0B24           ; routine PO-ANY
 ; THE 'POSITION STORE' ROUTINE
 ; ----------------------------
 ;   This routine updates the system variables associated with the main screen, 
-;   the lower screen/input buffer or the ZX printer.
+;   the lower screen/input buffer.
 
 ;; PO-STORE
-L0ADC:  BIT     1,(IY+FLAGS-ERR_NR)
-                                ; Test FLAGS - is printer in use ?
-        JR      NZ,L0AFC        ; Forward, if so, to PO-ST-PR
-
-        BIT     0,(IY+TVFLAG-ERR_NR)
+L0ADC:  BIT     0,(IY+TVFLAG-ERR_NR)
                                 ; Test TV_FLAG - is lower screen in use ?
         JR      NZ,L0AF0        ; Forward, if so, to PO-ST-E
 
@@ -3387,37 +3361,19 @@ L0AF0:  LD      (SPOSNL),BC     ; Update SPOSNL line/column lower screen
         LD      (DFCCL),HL      ; Update DFCCL  lower screen memory address
         RET                     ; Return.
 
-;   This section deals with the ZX Printer.
-
-;; PO-ST-PR
-L0AFC:  LD      (IY+P_POSN-ERR_NR),C
-                                ; Update P_POSN column position printer
-        LD      (PR_CC),HL      ; Update PR_CC - full printer buffer address 
-        RET                     ; Return.
-
 ;   Note. that any values stored in location 23681 will be overwritten with 
 ;   the value 91 decimal. 
 ;   Credit April 1983, Dilwyn Jones. "Delving Deeper into your ZX Spectrum".
+
 
 ; ----------------------------
 ; THE 'POSITION FETCH' ROUTINE
 ; ----------------------------
 ;   This routine fetches the line/column and display file address of the upper 
-;   and lower screen or, if the printer is in use, the column position and 
-;   absolute memory address.
-;   Note. that PR-CC-hi (23681) is used by this routine and if, in accordance 
-;   with the manual (that says this is unused), the location has been used for 
-;   other purposes, then subsequent output to the printer buffer could corrupt 
-;   a 256-byte section of memory.
+;   and lower screen.
 
 ;; PO-FETCH
-L0B03:  BIT     1,(IY+FLAGS-ERR_NR)
-                                ; Test FLAGS - is printer in use ?
-        JR      NZ,L0B1D        ; Forward, if so, to PO-F-PR
-
-;   assume upper screen in use and thus optimize for path that requires speed.
-
-        LD      BC,(S_POSN)     ; Fetch line/column from S_POSN
+L0B03:  LD      BC,(S_POSN)     ; Fetch line/column from S_POSN
         LD      HL,(DF_CC)      ; Fetch DF_CC display file address
 
         BIT     0,(IY+TVFLAG-ERR_NR)
@@ -3430,15 +3386,6 @@ L0B03:  BIT     1,(IY+FLAGS-ERR_NR)
         LD      HL,(DFCCL)      ; Fetch display file address from DFCCL
         RET                     ; Return.
 
-; ---
-
-;   This section deals with the ZX Printer.
-
-;; PO-F-PR
-L0B1D:  LD      C,(IY+P_POSN-ERR_NR)
-                                ; Fetch column from P_POSN.
-        LD      HL,(PR_CC)      ; Fetch printer buffer address from PR_CC.
-        RET                     ; Return.
 
 ; ---------------------------------
 ; THE 'PRINT ANY CHARACTER' ROUTINE
@@ -3448,7 +3395,7 @@ L0B1D:  LD      C,(IY+P_POSN-ERR_NR)
 
 ;; PO-ANY
 L0B24:  CP      $80             ; ASCII ?
-        JR      C,L0B65         ; to PO-CHAR is so.
+        JR      C,L0B65         ; to PO-CHAR if so.
 
         CP      $90             ; test if a block graphic character.
         JR      NC,L0B52        ; to PO-T&UDG to print tokens and UDGs
@@ -3461,7 +3408,7 @@ L0B24:  CP      $80             ; ASCII ?
                                 ; then bottom half.
         CALL    L0B03           ; routine PO-FETCH fetches print position.
         LD      DE,MEMBOT       ; MEM-0 is location of 8 bytes of character
-        JR      L0B7F           ; to PR-ALL to print to screen or printer
+        JR      L0B7F           ; to PR-ALL to print to screen
 
 ; ---
 
@@ -3559,14 +3506,6 @@ L0B7F:  LD      A,C             ; column to A
 
         DEC     B               ; down one line
         LD      C,A             ; load C with $21
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - Is printer in use
-        JR      Z,L0B93         ; to PR-ALL-1 if not
-
-        PUSH    DE              ; save source address
-        CALL    L0ECD           ; routine COPY-BUFF outputs line to printer
-        POP     DE              ; restore character source address
-        LD      A,C             ; the new column number ($21) to C
 
 ;; PR-ALL-1
 L0B93:  CP      C               ; this test is really for screen - new line ?
@@ -3590,61 +3529,31 @@ L0BA4:  RRA                     ; skip bit 1 of P_FLAG
         SBC     A,A             ; will be FF for INVERSE 1 else zero
         LD      C,A             ; transfer INVERSE mask to C
         LD      A,$08           ; prepare to count 8 bytes
-        AND     A               ; clear carry to signal screen
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        JR      Z,L0BB6         ; to PR-ALL-3 if screen
-
-        SET     1,(IY+FLAGS2-ERR_NR)
-                                ; update FLAGS2  - signal printer buffer has 
-                                ; been used.
-        SCF                     ; set carry flag to signal printer.
-
-;; PR-ALL-3
-L0BB6:  EX      DE,HL           ; now HL=source, DE=destination
+        EX      DE,HL           ; now HL=source, DE=destination
 
 ;; PR-ALL-4
-L0BB7:  EX      AF,AF'          ; save printer/screen flag
+L0BB7:  EX      AF,AF'          ; save count
         LD      A,(DE)          ; fetch existing destination byte
         AND     B               ; consider OVER
         XOR     (HL)            ; now XOR with source
         XOR     C               ; now with INVERSE MASK
-        LD      (DE),A          ; update screen/printer
-        EX      AF,AF'          ; restore flag
-        JR      C,L0BD3         ; to PR-ALL-6 - printer address update
-
+        LD      (DE),A          ; update screen
+        EX      AF,AF'          ; restore count
         INC     D               ; gives next pixel line down screen
-
-;; PR-ALL-5
-L0BC1:  INC     HL              ; address next character byte
+        INC     HL              ; address next character byte
         DEC     A               ; the byte count is decremented
         JR      NZ,L0BB7        ; back to PR-ALL-4 for all 8 bytes
 
         EX      DE,HL           ; destination to HL
         DEC     H               ; bring back to last updated screen position
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        CALL    Z,L0BDB         ; if not, call routine PO-ATTR to update
-                                ; corresponding colour attribute.
-        POP     HL              ; restore original screen/printer position
+        CALL    L0BDB           ; call routine PO-ATTR to update colour
+        POP     HL              ; restore original screen position
         POP     BC              ; and line column
         DEC     C               ; move column to right
-        INC     HL              ; increase screen/printer position
+        INC     HL              ; increase screen position
         RET                     ; return and continue into PO-STORE
                                 ; within PO-ABLE
 
-; ---
-
-;   This branch is used to update the printer position by 32 places
-;   Note. The high byte of the address D remains constant (which it should).
-
-;; PR-ALL-6
-L0BD3:  EX      AF,AF'          ; save the flag
-        LD      A,$20           ; load A with 32 decimal
-        ADD     A,E             ; add this to E
-        LD      E,A             ; and store result in E
-        EX      AF,AF'          ; fetch the flag
-        JR      L0BC1           ; back to PR-ALL-5
 
 ; -----------------------------------
 ; THE 'GET ATTRIBUTE ADDRESS' ROUTINE
@@ -3825,11 +3734,7 @@ L0C44:  BIT     7,(HL)          ; is character inverted ?
 ; The B register holds the current line.
 
 ;; PO-SCR
-L0C55:  BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        RET     NZ              ; return immediately if so.
-
-        LD      DE,L0DD9        ; set DE to address: CL-SET
+L0C55:  LD      DE,L0DD9        ; set DE to address: CL-SET
         PUSH    DE              ; and push for return address.
 
         LD      A,B             ; transfer the line to A.
@@ -4229,30 +4134,22 @@ L0DAF:  LD      HL,$0000        ; Initialize plot coordinates.
 ; THE 'CL-SET' ROUTINE
 ; --------------------
 ; This important subroutine is used to calculate the character output
-; address for screens or printer based on the line/column for screens
-; or the column for printer.
+; address based on the line/column.
 
 ;; CL-SET
-L0DD9:  LD      HL,$5B00        ; the base address of printer buffer
-        BIT     1,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - is printer in use ?
-        JR      NZ,L0DF4        ; forward to CL-SET-2 if so.
-
-        LD      A,B             ; transfer line to A.
+L0DD9:  PUSH    BC              ; save the line/column.
         BIT     0,(IY+TVFLAG-ERR_NR)
                                 ; test TV_FLAG  - lower screen in use ?
         JR      Z,L0DEE         ; skip to CL-SET-1 if handling upper part
 
+        LD      A,B             ; transfer line to A.
         ADD     A,(IY+DF_SZ-ERR_NR)
                                 ; add DF_SZ for lower screen
         SUB     $18             ; and adjust.
+        LD      B,A             ; transfer line to B
 
 ;; CL-SET-1
-L0DEE:  PUSH    BC              ; save the line/column.
-        LD      B,A             ; transfer line to B
-                                ; (adjusted if lower screen)
-
-        CALL    L0E9B           ; routine CL-ADDR calculates address at left
+L0DEE:  CALL    L0E9B           ; routine CL-ADDR calculates address at left
                                 ; of screen.
         POP     BC              ; restore the line/column.
 
@@ -4556,8 +4453,6 @@ L0EDA:  LD      A,$04           ; output value 4 to port
 
 ;; CLEAR-PRB
 L0EDF:  LD      HL,$5B00        ; the location of the buffer.
-        LD      (IY+PR_CC-ERR_NR),L
-                                ; update PR_CC_lo - set to zero - superfluous.
         XOR     A               ; clear the accumulator.
         LD      B,A             ; set count to 256 bytes.
 
@@ -5696,12 +5591,6 @@ L121C:
         LD      BC,$000E        ; copy the 14 bytes of initial 7 streams data
         LDIR                    ; from ROM to RAM.
 
-        SET     1,(IY+FLAGS-ERR_NR)
-                                ; update FLAGS  - signal printer in use.
-        CALL    L0EDF           ; call routine CLEAR-PRB to initialize system
-                                ; variables associated with printer.
-                                ; The buffer is clear.
-
         LD      (IY+DF_SZ-ERR_NR),$02
                                 ; set DF_SZ the lower screen display size to
                                 ; two lines
@@ -5827,12 +5716,6 @@ L1303:  HALT                    ; wait for interrupt the only routine that can
 
         RES     5,(IY+FLAGS-ERR_NR)
                                 ; update bit 5 of FLAGS - signal no new key.
-
-        BIT     1,(IY+FLAGS2-ERR_NR)
-                                ; test FLAGS2 - is printer buffer clear ?
-        CALL    NZ,L0ECD        ; call routine COPY-BUFF if not.
-                                ; Note. the programmer has neglected
-                                ; to set bit 1 of FLAGS first.
 
         LD      A,(ERR_NR)      ; fetch ERR_NR
         INC     A               ; increment to give true code.
@@ -6349,7 +6232,10 @@ L1634:  SET     0,(IY+TVFLAG-ERR_NR)
                                 ; update FLAGS    - signal no new key
         SET     4,(IY+FLAGS2-ERR_NR)
                                 ; update FLAGS2   - signal K channel in use
-        JR      L1646           ; forward to CHAN-S-1 for indirect exit
+        RES     1,(IY+FLAGS-ERR_NR)
+                                ; update FLAGS  - signal printer not in use
+        JP      L0D4D           ; jump back to TEMPS and exit via that
+                                ; routine after setting temporary attributes.
 
 ; --------------
 ; Channel S flag
@@ -6359,9 +6245,7 @@ L1634:  SET     0,(IY+TVFLAG-ERR_NR)
 ;; CHAN-S
 L1642:  RES     0,(IY+TVFLAG-ERR_NR)
                                 ; TV_FLAG  - signal main screen in use
-
-;; CHAN-S-1
-L1646:  RES     1,(IY+FLAGS-ERR_NR)
+        RES     1,(IY+FLAGS-ERR_NR)
                                 ; update FLAGS  - signal printer not in use
         JP      L0D4D           ; jump back to TEMPS and exit via that
                                 ; routine after setting temporary attributes.
