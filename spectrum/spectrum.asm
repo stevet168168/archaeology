@@ -3148,13 +3148,13 @@ L0A23:  INC     C               ; move left one column.
 
         INC     B               ; move up one screen line
         LD      C,$02           ; the rightmost column position.
-        LD      A,$18           ; Note. This should be $19
+        LD      A,$19           ; top row
                                 ; credit. Dr. Frank O'Hara, 1982
 
         CP      B               ; has position moved past top of screen ?
         JR      NZ,L0A3A        ; to PO-BACK-3 if not and store new position.
 
-        DEC     B               ; else back to $18.
+        DEC     B               ; else back to $19.
 
 ;; PO-BACK-2
 L0A38:  LD      C,$21           ; the leftmost column position.
@@ -3168,12 +3168,6 @@ L0A3A:  JP      L0DD9           ; to CL-SET and PO-STORE to save new
 ; --------------------------
 ;   This moves the print position to the right leaving a trail in the
 ;   current background colour.
-;   "However the programmer has failed to store the new print position
-;   so CHR$ 9 will only work if the next print position is at a newly
-;   defined place.
-;   e.g. PRINT PAPER 2; CHR$ 9; AT 4,0;
-;   does work but is not very helpful"
-;   - Dr. Ian Logan, Understanding Your Spectrum, 1982.
 
 ;; PO-RIGHT
 L0A3D:  LD      A,(P_FLAG)      ; fetch P_FLAG value
@@ -3182,14 +3176,13 @@ L0A3D:  LD      A,(P_FLAG)      ; fetch P_FLAG value
         LD      (IY+P_FLAG-ERR_NR),$01
                                 ; temporarily set P_FLAG 'OVER 1'.
         LD      A,$20           ; prepare a space.
-        CALL    L0B65           ; routine PO-CHAR to print it.
-                                ; Note. could be PO-ABLE which would update
+        CALL    L0AD9           ; routine PO-ABLE to print and update
                                 ; the column position.
 
         POP     AF              ; restore the permanent flag.
         LD      (P_FLAG),A      ; and restore system variable P_FLAG
 
-        RET                     ; return without updating column position
+        RET                     ; return
 
 ; -----------------------
 ; Perform carriage return
@@ -3203,7 +3196,6 @@ L0A4F:  BIT     1,(IY+FLAGS-ERR_NR)
                                 ; the print position.
 
         LD      C,$21           ; the leftmost column position.
-        CALL    L0C55           ; routine PO-SCR handles any scrolling required.
         DEC     B               ; to next screen line.
         JP      L0DD9           ; jump forward to CL-SET to store new position.
 
@@ -3214,9 +3206,7 @@ L0A4F:  BIT     1,(IY+FLAGS-ERR_NR)
 ; tabstops.  The routine is only reached via the control character table.
 
 ;; PO-COMMA
-L0A5F:  CALL    L0B03           ; routine PO-FETCH - seems unnecessary.
-
-        LD      A,C             ; the column position. $21-$01
+L0A5F:  LD      A,C             ; the column position. $21-$01
         DEC     A               ; move right. $20-$00
         DEC     A               ; and again   $1F-$00 or $FF if trailing
         AND     $10             ; will be $00 or $10.
@@ -3387,10 +3377,7 @@ L0ADC:  BIT     1,(IY+FLAGS-ERR_NR)
 
         LD      (S_POSN),BC     ; Update S_POSN - line/column upper screen
         LD      (DF_CC),HL      ; Update DF_CC - upper display file address
-
         RET                     ; Return.
-
-; ---
 
 ;   This section deals with the lower screen.
 
@@ -3400,15 +3387,12 @@ L0AF0:  LD      (SPOSNL),BC     ; Update SPOSNL line/column lower screen
         LD      (DFCCL),HL      ; Update DFCCL  lower screen memory address
         RET                     ; Return.
 
-; ---
-
 ;   This section deals with the ZX Printer.
 
 ;; PO-ST-PR
 L0AFC:  LD      (IY+P_POSN-ERR_NR),C
                                 ; Update P_POSN column position printer
-        LD      (PR_CC),HL      ; Update PR_CC - full printer buffer memory 
-                                ; address
+        LD      (PR_CC),HL      ; Update PR_CC - full printer buffer address 
         RET                     ; Return.
 
 ;   Note. that any values stored in location 23681 will be overwritten with 
