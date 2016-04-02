@@ -2055,7 +2055,8 @@ L0609:  SUB     L1ADF + 1 % 256 ; subtract the known offset.
                                 ; expression follows and stacks the
                                 ; parameters in run-time.
 
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L0652         ; forward to SA-DATA if checking syntax.
 
         LD      BC,$0011        ; presume seventeen bytes for a header.
@@ -2180,8 +2181,8 @@ L0672:  JP      NZ,L1C8A        ; to REPORT-C if not an array variable.
                                 ; or erroneously a simple string.
                                 ; 'Nonsense in BASIC'
 
-
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L0692         ; forward to SA-DATA-1 if checking syntax.
 
         INC     HL              ; step past single character variable name.
@@ -7084,7 +7085,8 @@ L17F9:  LD      A,$02           ; default is stream 2 - the upper screen.
 L17FB:  LD      (IY+TVFLAG-ERR_NR),$00
                                 ; the TV_FLAG is initialized with bit 0 reset
                                 ; indicating upper screen in use.
-        CALL    L2530           ; routine SYNTAX-Z - checking syntax ?
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         CALL    NZ,L1601        ; routine CHAN-OPEN if in run-time.
 
         RST     18H             ; GET-CHAR
@@ -8481,7 +8483,8 @@ L1BB2:  POP     BC              ; drop return address STMT-RET and
 ;
 
 ;; LINE-END
-L1BB3:  CALL    L2530           ; routine SYNTAX-Z  (UNSTACK-Z?)
+L1BB3:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     Z               ; return if checking syntax.
 
         LD      HL,(NXTLIN)     ; fetch NXTLIN to HL.
@@ -8562,7 +8565,8 @@ L1BEC:  RST     08H             ; ERROR-1
 ; syntax is in order.
 
 ;; CHECK-END
-L1BEE:  CALL    L2530           ; routine SYNTAX-Z
+L1BEE:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     NZ              ; return immediately in runtime
 
         POP     BC              ; drop address of calling routine.
@@ -8679,7 +8683,8 @@ L1C30:  CALL    Z,L2996         ; routine STK-VAR considers a subscript/slice
         JR      NZ,L1C46        ; to VAR-A-3 if numeric
 
         XOR     A               ; default to array/slice - to be retained.
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         CALL    NZ,L2BF1        ; routine STK-FETCH is called in runtime
                                 ; may overwrite A with 1.
         LD      HL,FLAGX        ; address system variable FLAGX
@@ -8850,7 +8855,8 @@ L1CA5:  SUB     L1AEB-$D8 % 256 ; convert $EB to $D8 ('INK') etc.
 ; Note. this command should ensure that current channel is actually 'S'.
 
 ;; CLASS-09
-L1CBE:  CALL    L2530           ; routine SYNTAX-Z
+L1CBE:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L1CD6         ; forward to CL-09-1 if checking syntax.
 
         RES     0,(IY+TVFLAG-ERR_NR)
@@ -8912,7 +8918,8 @@ L1CDE:  CP      $0D             ; is character a carriage return ?
 ; calculator stack as a default value in runtime.
 
 ;; USE-ZERO
-L1CE6:  CALL    L2530           ; routine SYNTAX-Z  (UNSTACK-Z?)
+L1CE6:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     Z               ;
 
         RST     28H             ;; FP-CALC
@@ -8943,7 +8950,8 @@ L1CEE:  RST     08H             ; ERROR-1
 
 ;; IF
 L1CF0:  POP     BC              ; drop return address - STMT-RET
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L1D00         ; forward to IF-1 if checking syntax
                                 ; to check syntax of PRINT "You Win"
 
@@ -9251,7 +9259,8 @@ L1DEC:  RST     20H             ; NEXT-CHAR
 ; -> Entry point.
 ;; READ
 L1DED:  CALL    L1C1F           ; routine CLASS-01 checks variable.
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L1E1E         ; forward to READ-2 if checking syntax
 
 
@@ -9308,7 +9317,8 @@ L1E1E:  RST     18H             ; GET-CHAR
 ;         wages - tax, TRUE, The meaning of life
 
 ;; DATA
-L1E27:  CALL    L2530           ; routine SYNTAX-Z to check status
+L1E27:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      NZ,L1E37        ; forward to DATA-2 if in runtime
 
 ;; DATA-1
@@ -9780,7 +9790,8 @@ L1F54:  LD      A,$7F           ; Input address: $7FFE
 ; during line-entry.
 
 ;; DEF-FN
-L1F60:  CALL    L2530           ; routine SYNTAX-Z
+L1F60:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L1F6A         ; forward to DEF-FN-1 if parsing
 
         LD      A,$CE           ; else load A with 'DEF FN' and
@@ -9907,8 +9918,8 @@ L1FBD:  JP      NZ,L1C8A        ; jump back to REPORT-C if the expected result
 ; early if checking syntax.
 
 ;; UNSTACK-Z
-L1FC3:  CALL    L2530           ; routine SYNTAX-Z sets zero flag if syntax
-                                ; is being checked.
+L1FC3:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
 
         POP     HL              ; drop the return address.
         RET      Z              ; return to previous call in chain if checking
@@ -9941,7 +9952,8 @@ L1FCD:  LD      A,$02           ; the stream for the upper screen.
 ; The LPRINT command joins here.
 
 ;; PRINT-1
-L1FCF:  CALL    L2530           ; routine SYNTAX-Z checks if program running
+L1FCF:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         CALL    NZ,L1601        ; routine CHAN-OPEN if so
         CALL    L0D4D           ; routine TEMPS sets temporary colours.
         CALL    L1FDF           ; routine PRINT-2 - the actual item
@@ -10113,7 +10125,8 @@ L204E:  RST     18H             ; GET-CHAR
                                 ; i.e. print at next tabstop.
         JR      NZ,L2061        ; forward to PR-POSN-2 if anything else.
 
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L2067         ; forward to PR-POSN-3 if checking syntax.
 
         LD      A,$06           ; prepare the 'comma' control character.
@@ -10177,7 +10190,8 @@ L2070:  CP      $23             ; is character '#' ?
 ;
 
 ;; INPUT
-L2089:  CALL    L2530           ; routine SYNTAX-Z to check if in runtime.
+L2089:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
 
         JR      Z,L2096         ; forward to INPUT-1 if checking syntax.
 
@@ -10307,7 +10321,8 @@ L20ED:  CALL     L2C8D          ; routine ALPHA checks if character is
                                 ; update FLAGX  - signal not INPUT LINE.
 
 ;; IN-PROMPT
-L20FA:  CALL    L2530           ; routine SYNTAX-Z
+L20FA:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JP      Z,L21B2         ; forward to IN-NEXT-2 if checking syntax.
 
         CALL    L16BF           ; routine SET-WORK clears workspace.
@@ -10530,7 +10545,8 @@ L21CE:  RST     08H             ; ERROR-1
         DEFB    $0B             ; Error Report: Nonsense in BASIC
 
 ;; IN-STOP
-L21D0:  CALL    L2530           ; routine SYNTAX-Z (UNSTACK-Z?)
+L21D0:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     Z               ; return if checking syntax
                                 ; as user wouldn't see error report.
                                 ; but generate visible error report
@@ -12025,16 +12041,20 @@ L24FB:  RST     18H             ; GET-CHAR
                                 ; of the expression.
 
 ;; S-LOOP-1
-L24FF:  LD      C,A             ; store the character while a look up is done.
+L24FF:  CALL    L2D1B           ; routine NUMERIC resets carry if digit found
+        JP      NC,L268D        ; jump to S-DECIMAL if so
+
+        CALL    L2C8D           ; routine ALPHA sets carray if letter found
+        JP      C,L26C9         ; jump to S-LETTER if so
+
+        LD      C,A             ; store the character while a look up is done.
         LD      HL,L2596        ; Address: scan-func
         CALL    L16DC           ; routine INDEXER is called to see if it is
                                 ; part of a limited range '+', '(', 'ATTR' etc.
 
         LD      A,C             ; fetch the character back
-        JP      NC,L2684        ; jump forward to S-ALPHNUM if not in primary
-                                ; operators and functions to consider in the
-                                ; first instance a digit or a variable and
-                                ; then anything else.                >>>
+        JP      NC,L26DF        ; jump forward to S-NEGATE if not found to
+                                ; consider unary minus then functions
 
         LD      B,$00           ; but here if it was found in table so
         LD      C,(HL)          ; fetch offset from table and make B zero.
@@ -12088,18 +12108,6 @@ L2522:  RST     20H             ; NEXT-CHAR
 ;; S-RPORT-C
 L252D:  JP      NZ,L1C8A        ; jump back to REPORT-C if not.
                                 ; 'Nonsense in BASIC'.
-
-; ------------
-; Check syntax
-; ------------
-; This routine is called on a number of occasions to check if syntax is being
-; checked or if the program is being run. To test the flag inline would use
-; four bytes of code, but a call instruction only uses 3 bytes of code.
-
-;; SYNTAX-Z
-L2530:  BIT     7,(IY+FLAGS-ERR_NR)
-                                ; test FLAGS  - checking syntax only ?
-        RET                     ; return.
 
 ; ----------------
 ; Scanning SCREEN$
@@ -12240,25 +12248,18 @@ L2580:  CALL    L2307           ; routine STK-TO-BC fetches line to C,
 ; -----------------------
 ; This table is used by INDEXER routine to find the offsets to
 ; four operators and eight functions. e.g. $A8 is the token 'FN'.
-; This table is used in the first instance for the first character of an
-; expression or by a recursive call to SCANNING for the first character of
-; any sub-expression. It eliminates functions that have no argument or
-; functions that can have more than one argument and therefore require
-; braces. By eliminating and dealing with these now it can later take a
-; simplistic approach to all other functions and assume that they have
-; one argument.
-; Similarly by eliminating BIN and '.' now it is later able to assume that
-; all numbers begin with a digit and that the presence of a number or
-; variable can be detected by a call to ALPHANUM.
+;
 ; By default all expressions are positive and the spurious '+' is eliminated
 ; now as in print +2. This should not be confused with the operator '+'.
 ; Note. this does allow a degree of nonsense to be accepted as in
 ; PRINT +"3 is the greatest.".
+;
 ; An acquired programming skill is the ability to include brackets where
 ; they are not necessary.
 ; A bracket at the start of a sub-expression may be spurious or necessary
 ; to denote that the contained expression is to be evaluated as an entity.
 ; In either case this is dealt with by recursive calls to SCANNING.
+;
 ; An expression that begins with a quote requires special treatment.
 
 ;; scan-func
@@ -12310,7 +12311,8 @@ L25BE:  CALL    L250F           ; routine S-QUOTE-S copies string until a
 
 ; but if just an isolated quote then that terminates the string.
 
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L25D9         ; forward to S-Q-PRMS if checking syntax.
 
 
@@ -12430,7 +12432,8 @@ L25F5:  JP      L27BD           ; jump forward to S-FN-SBRN.
 ; ->
 
 ;; S-RND
-L25F8:  CALL    L2530           ; routine SYNTAX-Z
+L25F8:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L2625         ; forward to S-RND-END if checking syntax.
 
         LD      BC,(SEED)       ; fetch system variable SEED
@@ -12473,7 +12476,8 @@ L2625:  JR      L2630           ; forward to S-PI-END
 
 ; ->
 ;; S-PI
-L2627:  CALL    L2530           ; routine SYNTAX-Z
+L2627:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L2630         ; to S-PI-END if checking syntax.
 
         RST     28H             ;; FP-CALC
@@ -12569,19 +12573,6 @@ L267B:  CALL    L2522           ; routine S-2-COORD
 
 ; -----------------------------
 
-; ==> The branch was here if not in table.
-
-;; S-ALPHNUM
-L2684:  CALL    L2C88           ; routine ALPHANUM checks if variable or
-                                ; a digit.
-        JR      NC,L26DF        ; forward to S-NEGATE if not to consider
-                                ; a '-' character then functions.
-
-        CP      $41             ; compare 'A'
-        JR      NC,L26C9        ; forward to S-LETTER if alpha       ->
-                                ; else must have been numeric so continue
-                                ; into that routine.
-
 ; This important routine is called during runtime and from LINE-SCAN
 ; when a BASIC line is checked for syntax. It is this routine that
 ; inserts, during syntax checking, the invisible floating point numbers
@@ -12591,7 +12582,8 @@ L2684:  CALL    L2C88           ; routine ALPHANUM checks if variable or
 ; ->
 ;; S-BIN
 ;; S-DECIMAL
-L268D:  CALL    L2530           ; routine SYNTAX-Z
+L268D:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      NZ,L26B5        ; to S-STK-DEC in runtime
 
 ; this route is taken when checking syntax.
@@ -12838,7 +12830,8 @@ L2734:  POP     DE              ; fetch last priority and operation
 
 ;; S-STK-LST
 L274C:  PUSH    DE              ; now stack this priority/operation
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L275B         ; forward to S-SYNTEST if checking syntax.
 
         LD      A,E             ; fetch the operation code
@@ -13027,7 +13020,8 @@ L27B0:  DEFB    $06             ; '-'   opcode $C3
 ; - from a turn of the century newsgroup discussion initiated by Mike Wynne.
 
 ;; S-FN-SBRN
-L27BD:  CALL    L2530           ; routine SYNTAX-Z
+L27BD:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      NZ,L27F7        ; forward to SF-RUN in runtime
 
 
@@ -13371,13 +13365,15 @@ L28E3:  LD      A,(DEFADD+1)    ; load A with DEFADD_hi
 
 ; Note.
 
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JP      NZ,L2951        ; JUMP to STK-F-ARG in runtime and then
                                 ; back to this point if no variable found.
 
 ;; V-RUN/SYN
 L28EF:  LD      B,C             ; save flags in B
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      NZ,L28FD        ; to V-RUN to look for the variable in runtime
 
 ; if checking syntax the letter is not returned
@@ -13926,7 +13922,8 @@ L2A49:  CP      $28             ; is character '(' ?
 ; or from above.
 
 ;; SLICING
-L2A52:  CALL    L2530           ; routine SYNTAX-Z
+L2A52:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         CALL    NZ,L2BF1        ; routine STK-FETCH fetches parameters of
                                 ; string at runtime, start in DE, length 
                                 ; in BC. This could be an array subscript.
@@ -14030,7 +14027,8 @@ L2AA8:  POP     DE              ; restore start address from machine stack ***
                                 ; syntax.
 
 ;; SL-STORE
-L2AAD:  CALL    L2530           ; routine SYNTAX-Z  (UNSTACK-Z?)
+L2AAD:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     Z               ; return if checking syntax.
                                 ; but continue to store the string in runtime.
 
@@ -14101,7 +14099,8 @@ L2ACD:  PUSH    DE              ; preserve DE register throughout.
                                 ; with value on calculator stack.
 
         POP     AF              ; pop the flag.
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      Z,L2AEB         ; forward to I-RESTORE if checking syntax so
                                 ; avoiding a comparison with supplied limit.
 
@@ -14162,7 +14161,8 @@ L2AEE:  EX      DE,HL           ;
 ; instruction to save a few clock-cycles.
 
 ;; GET-HL*DE
-L2AF4:  CALL    L2530           ; routine SYNTAX-Z.
+L2AF4:  BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         RET     Z               ; return if checking syntax.
 
         CALL    L30A9           ; routine HL-HL*DE.
@@ -14507,7 +14507,8 @@ L2C02:  CALL    L28B2           ; routine LOOK-VARS
 L2C05:  JP      NZ,L1C8A        ; jump to REPORT-C if a long-name variable.
                                 ; DIM lottery numbers(49) doesn't work.
 
-        CALL    L2530           ; routine SYNTAX-Z
+        BIT     7,(IY+FLAGS-ERR_NR)
+                                ; test FLAGS  - checking syntax only ?
         JR      NZ,L2C15        ; forward to D-RUN in runtime.
 
         RES     6,C             ; signal 'numeric' array even if string as
