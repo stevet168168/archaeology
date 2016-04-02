@@ -14736,9 +14736,9 @@ L2CDA:  RST     18H             ; GET-CHAR
         RST     28H             ;; FP-CALC   ;x or 0,d.           first pass.
         DEFB    $E0             ;;get-mem-0  ;x or 0,d,1.
         DEFB    $A4             ;;stk-ten    ;x or 0,d,1,10.
-        DEFB    $05             ;;division   ;x or 0,d,1/10.
-        DEFB    $C0             ;;st-mem-0   ;x or 0,d,1/10.
-        DEFB    $04             ;;multiply   ;x or 0,d/10.
+        DEFB    $04             ;;multiply   ;x or 0,d,10.
+        DEFB    $C0             ;;st-mem-0   ;x or 0,d,10.
+        DEFB    $05             ;;division   ;x or 0,d/10.
         DEFB    $0F             ;;addition   ;x or 0 + d/10.
         DEFB    $38             ;;end-calc   last value.
 
@@ -14748,8 +14748,8 @@ L2CDA:  RST     18H             ; GET-CHAR
 ; ---
 
 ; although only the first pass is shown it can be seen that at each pass
-; the new less significant digit is multiplied by an increasingly smaller
-; factor (1/100, 1/1000, 1/10000 ... ) before being added to the previous
+; the new less significant digit is divided by an increasingly larger
+; factor (100, 1000, 10000 ... ) before being added to the previous
 ; last value to form a new last value.
 
 ; Finally see if an exponent has been input.
