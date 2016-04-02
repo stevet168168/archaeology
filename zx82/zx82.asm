@@ -362,11 +362,6 @@ N0081:  INC     HL
         LD      (CH_ADD),HL     ; update CH_ADD
         RET
 
-        DEFB    $FF, $FF, $FF   ; Ten unused locations.
-        DEFB    $FF, $FF, $FF   ;
-        DEFB    $FF, $FF, $FF   ;
-        DEFB    $FF             ;
-
 ; ------------------
 ; THE 'TOKEN' TABLES
 ; ------------------
@@ -1492,36 +1487,6 @@ L046E:  DEFB    $89, $02, $D0, $12, $86;  261.625565290         C
 
 ;   These routines begin with the service routines followed by a single
 ;   command entry point.
-;   The first of these service routines is a curiosity.
-
-; -----------------------
-; THE 'ZX81 NAME' ROUTINE
-; -----------------------
-;   This routine fetches a filename in ZX81 format and is not used by the 
-;   cassette handling routines in this ROM.
-
-;; zx81-name
-L04AA:  CALL    L24FB           ; routine SCANNING to evaluate expression.
-        LD      A,(FLAGS)       ; fetch system variable FLAGS.
-        ADD     A,A             ; test bit 7 - syntax, bit 6 - result type.
-        JP      M,L1C8A         ; to REPORT-C if not string result
-                                ; 'Nonsense in BASIC'.
-
-        POP     HL              ; drop return address.
-        RET     NC              ; return early if checking syntax.
-
-        PUSH    HL              ; re-save return address.
-        CALL    L2BF1           ; routine STK-FETCH fetches string parameters.
-        LD      H,D             ; transfer start of filename
-        LD      L,E             ; to the HL register.
-        DEC     C               ; adjust to point to last character and
-        RET     M               ; return if the null string.
-                                ; or multiple of 256!
-
-        ADD     HL,BC           ; find last character of the filename.
-                                ; and also clear carry.
-        SET     7,(HL)          ; invert it.
-        RET                     ; return.
 
 ; =========================================
 ;
@@ -6555,20 +6520,6 @@ L16C5:  LD      HL,(STKBOT)     ; fetch STKBOT value
         LD      (MEM),HL        ; is restored to system variable MEM.
         POP     HL              ; saved value not required.
         RET                     ; return.
-
-; ------------------
-; Reclaim edit-line?
-; ------------------
-; This seems to be legacy code from the ZX80/ZX81 as it is 
-; not used in this ROM.
-; That task, in fact, is performed here by the dual-area routine CLEAR-SP.
-; This routine is designed to deal with something that is known to be in the
-; edit buffer and not workspace.
-; On entry, HL must point to the end of the something to be deleted.
-
-;; REC-EDIT
-L16D4:  LD      DE,(E_LINE)     ; fetch start of edit line from E_LINE.
-        JP      L19E5           ; jump forward to RECLAIM-1.
 
 ; --------------------------
 ; The Table INDEXING routine
