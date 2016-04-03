@@ -9404,7 +9404,7 @@ L1E67:  CALL    L1E99           ; routine FIND-INT2 puts operand in BC
         LD      L,C             ; number to HL.
         LD      D,$00           ; set statement to 0 - first.
         LD      A,H             ; compare high byte only
-        CP      $F0             ; to $F0 i.e. 61439 in full.
+        CP      $28             ; to $28 i.e. 10240 in full.
         JR      NC,L1E9F        ; forward to REPORT-B if above.
 
 ; This call entry point is used to update the system variables e.g. by RETURN.
