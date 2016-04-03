@@ -7635,8 +7635,10 @@ L19B1:  CP      $0D             ; end of line ?
 ; variable.
 
 ;; NEXT-ONE
-L19B8:  PUSH    HL              ; save the pointer address.
+L19B8:  LD      D,H             ; save the pointer address.
+        LD      E,L
         LD      A,(HL)          ; get first byte.
+        INC     HL              ; address next location.
         CP      $40             ; compare with upper limit for line numbers.
         JR      C,L19D5         ; forward to NEXT-O-3 if within BASIC area.
 
@@ -7646,35 +7648,24 @@ L19B8:  PUSH    HL              ; save the pointer address.
         BIT     5,A             ; is it a string or an array variable ?
         JR      Z,L19D6         ; forward to NEXT-O-4 to compute length.
 
-        ADD     A,A             ; test bit 6 for single-character variables.
-        JP      M,L19C7         ; forward to NEXT-O-1 if so
-
-        CCF                     ; clear the carry for long-named variables.
-                                ; it remains set for for-next loop variables.
-
-;; NEXT-O-1
-L19C7:  LD      BC,$0005        ; set BC to 5 for floating point number
-        JR      NC,L19CE        ; forward to NEXT-O-2 if not a for/next
-                                ; variable.
+        LD      BC,$0005        ; set BC to 5 for floating point number
+        ADD     A,A             ; test bit 6 for multi-character variables.
+        JP      P,L19CE         ; forward to NEXT-O-2 if so
+        JR      NC,L19DB        ; forward to NEXT-O-5 if not for/next.
 
         LD      C,$12           ; set BC to eighteen locations.
                                 ; value, limit, step, line and statement.
+        JR      L19DB           ; forward to NEXT-O-5.
 
 ; now deal with long-named variables
 
 ;; NEXT-O-2
-L19CE:  RLA                     ; test if character inverted. carry will also
-                                ; be set for single character variables
+L19CE:  LD      A,(HL)          ; and load character.
+        RLA                     ; test if character inverted.
         INC     HL              ; address next location.
-        LD      A,(HL)          ; and load character.
-        JR      NC,L19CE        ; back to NEXT-O-2 if not inverted bit.
-                                ; forward immediately with single character
-                                ; variable names.
+        JR      NC,L19CE        ; back to NEXT-O-2 if not inverted.
 
-        JR      L19DB           ; forward to NEXT-O-5 to add length of
-                                ; floating point number(s etc.).
-
-; ---
+        JR      L19DB           ; forward to NEXT-O-5.
 
 ; this branch is for line numbers.
 
@@ -7684,8 +7675,7 @@ L19D5:  INC     HL              ; increment pointer to low byte of line no.
 ; strings and arrays rejoin here
 
 ;; NEXT-O-4
-L19D6:  INC     HL              ; increment to address the length low byte.
-        LD      C,(HL)          ; transfer to C and
+L19D6:  LD      C,(HL)          ; transfer to C and
         INC     HL              ; point to high byte of length.
         LD      B,(HL)          ; transfer that to B
         INC     HL              ; point to start of BASIC/variable contents.
@@ -7695,7 +7685,7 @@ L19D6:  INC     HL              ; increment to address the length low byte.
 ;; NEXT-O-5
 L19DB:  ADD     HL,BC           ; add the length to give address of next
                                 ; line/variable in HL.
-        POP     DE              ; restore previous address to DE.
+
 
 ; ------------------
 ; Difference routine
