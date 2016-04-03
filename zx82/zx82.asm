@@ -7554,30 +7554,21 @@ L1980:  LD      A,(HL)          ; Load the high byte of line number and
 ; 1) To find the D'th statement in a line.
 ; 2) To find a token in held E.
 
-;; not-used
-L1988:  INC     HL              ;
-        INC     HL              ;
-        INC     HL              ;
-
-; -> entry point.
-
 ;; EACH-STMT
-L198B:  LD      (CH_ADD),HL     ; save HL in CH_ADD
-        LD      C,$00           ; initialize quotes flag
+L198B:  LD      C,$00           ; initialize quotes flag
 
 ;; EACH-S-1
 L1990:  DEC     D               ; decrease statement count
         RET     Z               ; return if zero
 
-
-        RST     20H             ; NEXT-CHAR
+        INC     HL
+        LD      A,(HL)
         CP      E               ; is it the search token ?
         JR      NZ,L199A        ; forward to EACH-S-3 if not
 
         AND     A               ; clear carry
+        LD      (CH_ADD),HL     ; save HL in CH_ADD
         RET                     ; return signalling success.
-
-; ---
 
 ;; EACH-S-2
 L1998:  INC     HL              ; next address
@@ -7585,7 +7576,6 @@ L1998:  INC     HL              ; next address
 
 ;; EACH-S-3
 L199A:  CALL    L18B6           ; routine NUMBER skips if number marker
-        LD      (CH_ADD),HL     ; save in CH_ADD
         CP      $22             ; is it quotes '"' ?
         JR      NZ,L19A5        ; to EACH-S-4 if not
 
@@ -7610,6 +7600,7 @@ L19B1:  CP      $0D             ; end of line ?
                                 ; which should be zero else
                                 ; 'Statement Lost'.
         SCF                     ; set carry flag - not found
+        LD      (CH_ADD),HL     ; save HL in CH_ADD
         RET                     ; return
 
 ; -----------------------------------------------------------------------
