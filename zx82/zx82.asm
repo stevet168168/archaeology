@@ -12774,20 +12774,37 @@ L274C:  PUSH    DE              ; now stack this priority/operation
         LD      A,E             ; fetch the operation code
         AND     $3F             ; mask off the result/operand bits to leave
                                 ; a calculator literal.
-        LD      B,A             ; transfer to B register
 
-; now use the calculator to perform the single operation - operand is on
-; the calculator stack.
-; Note. although the calculator is performing a single operation most
-; functions e.g. TAN are written using other functions and literals and
-; these in turn are written using further strings of calculator literals so
-; another level of magical recursion joins the juggling act for a while
-; as the calculator too is calling itself.
+        LD      HL,L2758        ; return address from literal handler
+        PUSH    HL              ; routine to stack
 
-        RST     28H             ;; FP-CALC
-        DEFB    $3B             ;;fp-calc-2
-L2758:  DEFB    $38             ;;end-calc
+        RLCA                    ; move twice the calculator literal
+        LD      L,A             ; to HL
+        LD      H,$00
+        RRCA                    ; restore the calculator literal
 
+        LD      DE,L32D7        ; Address: tbl-addrs
+        ADD     HL,DE           ; get address of handler routine address
+        LD      E,(HL)          ; and read address into DE
+        INC     HL
+        LD      D,(HL)
+        PUSH    DE              ; to stack
+
+        LD      HL,(STKEND)     ; DE for unary operator
+        LD      D,H
+        LD      E,L
+        LD      BC,$FFFB        ; the value -5
+        ADD     HL,BC           ; HL for unary operator
+
+        CP      $30             ; compare with furst unary operator (times 2)
+        RET     NC              ; jump to routine if unary
+
+        LD      D,H             ; subtract 5 from HL and DE if binary
+        LD      E,L
+        ADD     HL,BC
+        RET                     ; jump to routine
+
+L2758:  LD      (STKEND),DE
         JR      L2764           ; forward to S-RUNTEST
 
 ; ---
@@ -16987,9 +17004,7 @@ L338E:  LD      DE,L32D7        ; Address: tbl-addrs
         EX      (SP),HL         ; goes to stack
         PUSH    DE              ; now address of routine
         EXX                     ; main set
-                                ; avoid using IY register.
         LD      BC,(BREG-1)     ; BREG to B - not required?
-
 
 ; ------------------
 ; Handle delete (02)
@@ -17759,7 +17774,7 @@ L352D:  EX      DE,HL           ; make HL point to the number.
 
 ;   True binary operations.
 ;   A single entry point is used to evaluate six numeric and six string
-;   comparisons. On entry, the calculator literal is in the B register and
+;   comparisons. On entry, the calculator literal is in the A register and
 ;   the two numeric values, or the two string parameters, are on the 
 ;   calculator stack.
 ;   The individual bits of the literal are manipulated to group similar
@@ -17809,8 +17824,7 @@ L352D:  EX      DE,HL           ; make HL point to the number.
 ;   for numbers and strings.
 
 ;; no-l-eql,etc.
-L353B:  LD      A,B             ; transfer literal to accumulator.
-        SUB     $08             ; subtract eight - which is not useful. 
+L353B:  SUB     $08             ; subtract eight - which is not useful. 
 
         BIT     2,A             ; isolate '>', '<', '='.
 
@@ -18028,13 +18042,9 @@ L35B7:  POP     BC              ; now second length
 ;   the CALCULATE routine.
 
 ;; STK-PNTRS
-L35BF:  LD      HL,(STKEND)     ; fetch STKEND value from system variable.
-        LD      DE,$FFFB        ; the value -5
-        PUSH    HL              ; push STKEND value.
-
+L35BF:  LD      DE,(STKEND)     ; fetch STKEND value from system variable.
+        LD      HL,$FFFB        ; the value -5
         ADD     HL,DE           ; subtract 5 from HL.
-
-        POP     DE              ; pop STKEND to DE.
         RET                     ; return.
 
 ; -------------------
