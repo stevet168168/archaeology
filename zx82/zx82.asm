@@ -12781,7 +12781,6 @@ L274C:  PUSH    DE              ; now stack this priority/operation
         RLCA                    ; move twice the calculator literal
         LD      L,A             ; to HL
         LD      H,$00
-        RRCA                    ; restore the calculator literal
 
         LD      DE,L32D7        ; Address: tbl-addrs
         ADD     HL,DE           ; get address of handler routine address
@@ -16828,12 +16827,12 @@ L32D7:  DEFW    L368F           ; $00 Address: $368F - jump-true
         DEFW    L351B           ; $07 Address: $351B - or
 
         DEFW    L3524           ; $08 Address: $3524 - no-&-no
-        DEFW    L353B           ; $09 Address: $353B - no-l-eql
-        DEFW    L353B           ; $0A Address: $353B - no-gr-eql
-        DEFW    L353B           ; $0B Address: $353B - nos-neql
-        DEFW    L353B           ; $0C Address: $353B - no-grtr
-        DEFW    L353B           ; $0D Address: $353B - no-less
-        DEFW    L353B           ; $0E Address: $353B - nos-eql
+        DEFW    N353D           ; $09 Address: $353B - no-l-eql
+        DEFW    N353F           ; $0A Address: $353B - no-gr-eql
+        DEFW    N3541           ; $0B Address: $353B - nos-neql
+        DEFW    N353C           ; $0C Address: $353B - no-grtr
+        DEFW    N353E           ; $0D Address: $353B - no-less
+        DEFW    N3540           ; $0E Address: $353B - nos-eql
         DEFW    L3014           ; $0F Address: $3014 - addition
 
         DEFW    L352D           ; $10 Address: $352D - str-&-no
@@ -17604,6 +17603,8 @@ L34F9:  CALL    L34E9           ; routine TEST-ZERO
         RET     C               ; return if was zero as this
                                 ; is also the Boolean 'false' value.
 
+;; gr-eq-0
+L34FD:
         LD      A,$FF           ; prepare XOR mask for sign bit
         JR      L3507           ; forward to SIGN-TO-C
                                 ; to put sign in carry
@@ -17823,10 +17824,40 @@ L352D:  EX      DE,HL           ; make HL point to the number.
 ;   zero. The most likely explanation is that there were once separate end tests
 ;   for numbers and strings.
 
-;; no-l-eql,etc.
-L353B:  SUB     $08             ; subtract eight - which is not useful. 
+;; nos-neql
+N3541:  CALL    L300F           ; subtract
+        CALL    L34E9           ; test-zero
+        CCF                     ; flip carry
+        JR      L350B           ; overwrite 1 on carry
 
-        BIT     2,A             ; isolate '>', '<', '='.
+;; nos-eql
+N3540:  CALL    L300F           ; subtract
+        CALL    L34E9           ; test-zero
+        JR      L350B           ; overwrite 1 on carry
+
+;; no-gr-eql
+N353F:  CALL    L300F           ; subtract
+        JR      L34FD           ; gr-eq-0
+
+;; no-less
+N353E:  CALL    L300F           ; subtract
+        JR      L3506           ; less-0
+
+;; no-l-eql
+N353D:  CALL    L300F           ; subtract
+        CALL    L34E9           ; test-zero
+        JR      C,L350B         ; overwrite 1 on carry
+        JR      L3506           ; less-0
+
+;; no-grtr
+N353C:  CALL    L300F           ; subtract
+        JR      L34F9           ; greater-0
+
+
+
+
+;; no-l-eql,etc.
+L353B:  BIT     2,A             ; isolate '>', '<', '='.
 
         JR      NZ,L3543        ; skip to EX-OR-NOT with these.
 
@@ -17834,7 +17865,7 @@ L353B:  SUB     $08             ; subtract eight - which is not useful.
 
 ;; EX-OR-NOT
 L3543:  RRCA                    ; the first RRCA sets carry for a swap. 
-        JR      NC,L354E        ; forward to NU-OR-STR with other 8 cases
+        JR      NC,L3559        ; forward to STRINGS with other 8 cases
 
 ; for the other 4 cases the two values on the calculator stack are exchanged.
 
@@ -17848,24 +17879,6 @@ L3543:  RRCA                    ; the first RRCA sets carry for a swap.
         POP     DE              ; DE = first operand
         EX      DE,HL           ; as we were.
         POP     AF              ; restore A and carry.
-
-; Note. it would be better if the 2nd RRCA preceded the string test.
-; It would save two duplicate bytes and if we also got rid of that sub 8 
-; at the beginning we wouldn't have to alter which bit we test.
-
-;; NU-OR-STR
-L354E:  BIT     2,A             ; test if a string comparison.
-        JR      NZ,L3559        ; forward to STRINGS if so.
-
-; continue with numeric comparisons.
-
-        RRCA                    ; 2nd RRCA causes eql/neql to set carry.
-        PUSH    AF              ; save A and carry
-
-        CALL    L300F           ; routine subtract leaves result on stack.
-        JR      L358C           ; forward to END-TESTS
-
-; ---
 
 ;; STRINGS
 L3559:  RRCA                    ; 2nd RRCA causes eql/neql to set carry.
@@ -17971,13 +17984,6 @@ L358C:  POP     AF              ; pop carry  - will be set if eql/neql
                                 ; or, for strings, applies true result.
 
         POP     AF              ; pop carry and
-        PUSH    AF              ; save A
-
-        CALL    NC,L34F9        ; routine GREATER-0 tests numeric subtraction 
-                                ; result but also needlessly tests the string 
-                                ; value for zero - it must be.
-
-        POP     AF              ; pop A 
         RRCA                    ; the third RRCA - test for '<=', '>=' or '<>'.
         CALL    NC,L3501        ; apply a terminal NOT if so.
         RET                     ; return.
