@@ -7515,13 +7515,13 @@ L1974:  CALL    L1980           ; routine CP-LINES compares with that
         RET     NC              ; return if line has been passed or matched.
                                 ; if NZ, address of previous is in DE
 
+        PUSH    HL              ; save the current address
         INC     HL              ; skip over line number
         INC     HL
         LD      E,(HL)          ; get line length
         INC     HL
         LD      D,(HL)
         INC     HL
-        PUSH    HL              ; save the current address
         ADD     HL,DE           ; address next line
         POP     DE              ; restore address of previous line
         JR      L1974           ; back to LINE-AD-1 for another comparison
