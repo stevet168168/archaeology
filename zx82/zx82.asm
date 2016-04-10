@@ -12781,6 +12781,8 @@ L274C:  PUSH    DE              ; now stack this priority/operation
         RLCA                    ; move twice the calculator literal
         LD      L,A             ; to HL
         LD      H,$00
+        RRCA                    ; restore the calculator literal
+                                ; required for string comparisons
 
         LD      DE,L32D7        ; Address: tbl-addrs
         ADD     HL,DE           ; get address of handler routine address
@@ -12795,7 +12797,7 @@ L274C:  PUSH    DE              ; now stack this priority/operation
         LD      BC,$FFFB        ; the value -5
         ADD     HL,BC           ; HL for unary operator
 
-        CP      $30             ; compare with furst unary operator (times 2)
+        CP      $18             ; compare with furst unary operator (times 2)
         RET     NC              ; jump to routine if unary
 
         LD      D,H             ; subtract 5 from HL and DE if binary
