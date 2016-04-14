@@ -8975,7 +8975,7 @@ L1D34:  PUSH    HL              ; save position.
 
         POP     HL              ; restore variable position
         EX      DE,HL           ; swap pointers
-        LD      C,$0A           ; ten bytes to move
+        LD      BC,$000A        ; ten bytes to move
         LDIR                    ; Copy 'deleted' values to variable.
         LD      HL,(PPC)        ; Load with current line number from PPC
         EX      DE,HL           ; exchange pointers.
@@ -17005,7 +17005,6 @@ L338E:  LD      DE,L32D7        ; Address: tbl-addrs
         EX      (SP),HL         ; goes to stack
         PUSH    DE              ; now address of routine
         EXX                     ; main set
-        LD      BC,(BREG-1)     ; BREG to B - not required?
 
 ; ------------------
 ; Handle delete (02)
