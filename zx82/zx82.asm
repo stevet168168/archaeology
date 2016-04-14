@@ -8922,20 +8922,8 @@ L1D03:  CP      $CD             ; is there a 'STEP' ?
         RST     20H             ; NEXT-CHAR
         CALL    L1C82           ; routine EXPT-1NUM
         CALL    L1BEE           ; routine CHECK-END
-        JR      L1D16           ; to F-REORDER
 
-; ---
-
-;; F-USE-1
-L1D10:  CALL    L1BEE           ; routine CHECK-END
-
-        RST     28H             ;; FP-CALC      v,l.
-        DEFB    $A1             ;;stk-one       v,l,1=s.
-        DEFB    $38             ;;end-calc
-
-
-;; F-REORDER
-L1D16:  RST     28H             ;; FP-CALC       v,l,s.
+        RST     28H             ;; FP-CALC       v,l,s.
         DEFB    $C0             ;;st-mem-0       v,l,s.
         DEFB    $02             ;;delete         v,l.
         DEFB    $01             ;;exchange       l,v.
@@ -8943,6 +8931,19 @@ L1D16:  RST     28H             ;; FP-CALC       v,l,s.
         DEFB    $01             ;;exchange       l,s,v.
         DEFB    $38             ;;end-calc
 
+        JR      N1D1D           ; to F-CONT
+
+;; F-USE-1
+L1D10:  CALL    L1BEE           ; routine CHECK-END
+
+        RST     28H             ;; FP-CALC       v,l.
+        DEFB    $01             ;;exchange       l,v.
+        DEFB    $A1             ;;stk-one        l,v,s=1.
+        DEFB    $01             ;;exchange       l,s,v.
+        DEFB    $38             ;;end-calc
+
+;; F-CONT
+N1D1D:
         CALL    L2AFF           ; routine LET assigns the initial value v to
                                 ; the variable altering type if necessary.
         LD      (MEM),HL        ; The system variable MEM is made to point to
@@ -8987,6 +8988,12 @@ L1D34:  PUSH    HL              ; save position.
         INC     HL              ; and pointer
         LD      (HL),D          ; and store the looping statement.
                                 ;
+        RST     28H             ;; FP-CALC         l,s.
+        DEFB    $E1             ;;get-mem-1        l.
+        DEFB    $E0             ;;get-mem-0        l,v.
+        DEFB    $E2             ;;get-mem-2        l,v,s.
+        DEFB    $38             ;;end-calc
+
         CALL    L1DDA           ; routine NEXT-LOOP considers an initial
         RET     NC              ; iteration. Return to STMT-RET if a loop is
                                 ; possible to execute next statement.
@@ -9112,11 +9119,12 @@ L1DAB:  BIT     1,(IY+FLAGX-ERR_NR)
                                 ; value, limit, step.
 
         RST     28H             ;; FP-CALC     add step and re-store
-        DEFB    $E0             ;;get-mem-0    v.
-        DEFB    $E2             ;;get-mem-2    v,s.
-        DEFB    $0F             ;;addition     v+s.
-        DEFB    $C0             ;;st-mem-0     v+s.
-        DEFB    $02             ;;delete       .
+        DEFB    $E1             ;;get-mem-1    l.
+        DEFB    $E0             ;;get-mem-0    l,v.
+        DEFB    $E2             ;;get-mem-2    l,v,s.
+        DEFB    $0F             ;;addition     l,v=v+s.
+        DEFB    $C0             ;;st-mem-0     l,v.
+        DEFB    $E2             ;;get-mem-2    l,v,s.
         DEFB    $38             ;;end-calc
 
         CALL    L1DDA           ; routine NEXT-LOOP tests against limit.
@@ -9150,29 +9158,30 @@ L1DD8:  RST     08H             ; ERROR-1
 
 ;; NEXT-LOOP
 L1DDA:  RST     28H             ;; FP-CALC
-        DEFB    $E1             ;;get-mem-1        l.
-        DEFB    $E0             ;;get-mem-0        l,v.
-        DEFB    $E2             ;;get-mem-2        l,v,s.
         DEFB    $36             ;;less-0           l,v,(1/0) negative step ?
         DEFB    $00             ;;jump-true        l,v.(1/0)
+        DEFB    L1DE2-$         ;;to L1DE2, NEXT-1 if step negative
 
-        DEFB    $02             ;;to L1DE2, NEXT-1 if step negative
+        DEFB    $0D             ;;no-less          (1/0)
 
-        DEFB    $01             ;;exchange         v,l.
-
-;; NEXT-1
-L1DE2:  DEFB    $03             ;;subtract         l-v OR v-l.
-        DEFB    $37             ;;greater-0        (1/0)
         DEFB    $00             ;;jump-true        .
-
-        DEFB    $04             ;;to L1DE9, NEXT-2 if no more iterations.
+        DEFB    L1DE9-$         ;;to L1DE9, NEXT-2 if no more iterations.
 
         DEFB    $38             ;;end-calc         .
 
         AND     A               ; clear carry flag signalling another loop.
         RET                     ; return
 
-; ---
+;; NEXT-1
+L1DE2:  DEFB    $0C             ;;no-grtr          (1/0)
+
+        DEFB    $00             ;;jump-true        .
+        DEFB    L1DE9-$         ;;to L1DE9, NEXT-2 if no more iterations.
+
+        DEFB    $38             ;;end-calc         .
+
+        AND     A               ; clear carry flag signalling another loop.
+        RET                     ; return
 
 ;; NEXT-2
 L1DE9:  DEFB    $38             ;;end-calc         .
@@ -16915,16 +16924,7 @@ L335B:  CALL    L35BF           ; routine STK-PNTRS is called to set up the
                                 ; unary operation. HL = last value on stack.
                                 ; DE = STKEND first location after stack.
 
-; the calculate routine is called at this point by the series generator...
-
-;; GEN-ENT-1
-L335E:  LD      A,B             ; fetch the Z80 B register to A
-        LD      (BREG),A        ; and store value in system variable BREG.
-                                ; this will be the counter for dec-jr-nz
-                                ; or if used from fp-calc2 the calculator
-                                ; instruction.
-
-; ... and again later at this point
+; re-entry point used by the series generator
 
 ;; GEN-ENT-2
 L3362:  EXX                     ; switch sets
@@ -17295,16 +17295,9 @@ L343E:  LD      A,(DE)          ; each byte of second
 ;   and Dr Frank O'Hara, published 1983 by Melbourne House.
 
 ;; series-xx
-L3449:  LD      B,A             ; parameter $00 - $1F to B counter
-        CALL    L335E           ; routine GEN-ENT-1 is called.
-                                ; A recursive call to a special entry point
-                                ; in the calculator that puts the B register
-                                ; in the system variable BREG. The return
-                                ; address is the next location and where
-                                ; the calculator will expect its first
-                                ; instruction - now pointed to by HL'.
-                                ; The previous pointer to the series of
-                                ; five-byte numbers goes on the machine stack.
+L3449:  LD      (BREG),A        ; parameter $00 - $1F to B counter
+        CALL    L3362           ; routine GEN-ENT-2 recursively re-enters
+                                ; the calculator
 
 ; The initialization phase.
 
@@ -17333,10 +17326,7 @@ L3453:  DEFB    $31             ;;duplicate       v,v.
         CALL    L33C6           ; routine STK-DATA is called directly to
                                 ; push a value and advance H'L'.
         CALL    L3362           ; routine GEN-ENT-2 recursively re-enters
-                                ; the calculator without disturbing
-                                ; system variable BREG
-                                ; H'L' value goes on the machine stack and is
-                                ; then loaded as usual with the next address.
+                                ; the calculator
 
         DEFB    $0F             ;;addition
         DEFB    $01             ;;exchange
