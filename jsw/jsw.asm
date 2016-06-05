@@ -6503,6 +6503,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM00:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -6575,6 +6576,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM01:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -6647,6 +6649,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM02:
   DEFB $00,$03,$FF,$CF,$FC,$00,$00,$00 ; Room layout
   DEFB $AA,$AA,$AF,$FF,$3F,$00,$00,$00
   DEFB $00,$00,$3F,$D0,$5C,$00,$00,$00
@@ -6719,6 +6722,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM03:
   DEFB $30,$C3,$08,$00,$08,$00,$00,$00 ; Room layout
   DEFB $30,$C3,$08,$00,$0A,$AA,$AA,$AA
   DEFB $30,$C3,$08,$00,$08,$00,$00,$00
@@ -6792,6 +6796,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM04:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -6866,6 +6871,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM05:
   DEFB $80,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$00,$00,$00,$00,$00,$00,$00
   DEFB $A8,$00,$00,$00,$00,$00,$00,$00
@@ -6939,6 +6945,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM06:
   DEFB $A0,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$00,$00,$00,$00,$00,$00,$00
   DEFB $A0,$00,$00,$15,$04,$55,$00,$00
@@ -7011,6 +7018,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM07:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7083,6 +7091,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM08:
   DEFB $00,$00,$08,$00,$08,$00,$00,$00 ; Room layout
   DEFB $00,$00,$08,$00,$08,$00,$00,$00
   DEFB $00,$00,$08,$00,$08,$00,$00,$00
@@ -7159,6 +7168,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM09:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7233,6 +7243,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0A:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7302,6 +7313,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0B:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7377,6 +7389,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0C:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7450,6 +7463,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0D:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7522,6 +7536,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0E:
   DEFB $00,$00,$00,$00,$00,$00,$08,$02 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$08,$02
   DEFB $00,$00,$00,$00,$00,$00,$00,$02
@@ -7595,6 +7610,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM0F:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7671,6 +7687,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM10:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7743,6 +7760,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM11:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7817,6 +7835,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM12:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -7887,6 +7906,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM13:
   DEFB $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ; Room layout
   DEFB $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
   DEFB $A0,$00,$30,$00,$C0,$00,$C0,$0A
@@ -7964,6 +7984,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM14:
   DEFB $A0,$40,$0A,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$40,$0A,$00,$00,$00,$00,$00
   DEFB $A0,$40,$0A,$00,$00,$00,$00,$00
@@ -8038,6 +8059,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM15:
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
@@ -8110,6 +8132,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM16:
   DEFB $00,$00,$80,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$80,$00,$00,$00,$00,$00
   DEFB $00,$00,$80,$00,$00,$00,$00,$00
@@ -8185,6 +8208,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM17:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -8259,6 +8283,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM18:
   DEFB $00,$00,$01,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$01,$00,$00,$00,$00,$00
   DEFB $00,$00,$01,$00,$00,$00,$00,$00
@@ -8334,6 +8359,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM19:
   DEFB $00,$03,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$30,$00,$00,$C0,$00
   DEFB $54,$00,$00,$00,$00,$00,$00,$00
@@ -8407,6 +8433,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1A:
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
@@ -8478,6 +8505,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1B:
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
@@ -8553,6 +8581,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1C:
   DEFB $A0,$00,$00,$00,$00,$00,$A0,$00 ; Room layout
   DEFB $A0,$00,$00,$00,$00,$00,$A0,$00
   DEFB $A0,$00,$00,$00,$00,$00,$A0,$00
@@ -8623,6 +8652,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1D:
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
@@ -8701,6 +8731,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1E:
   DEFB $00,$00,$00,$A0,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$A0,$00,$00,$00,$00
   DEFB $00,$00,$00,$90,$00,$00,$00,$00
@@ -8774,6 +8805,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM1F:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -8844,6 +8876,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM20:
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
@@ -8914,6 +8947,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM21:
   DEFB $A0,$00,$00,$00,$00,$00,$00,$0A ; Room layout
   DEFB $A0,$00,$00,$00,$00,$00,$00,$0A
   DEFB $A0,$00,$00,$00,$00,$00,$00,$0A
@@ -8984,6 +9018,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM22:
   DEFB $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ; Room layout
   DEFB $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA
   DEFB $A0,$00,$00,$00,$00,$00,$00,$0A
@@ -9056,6 +9091,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM23:
   DEFB $AA,$AA,$AA,$AA,$AA,$AA,$AA,$AA ; Room layout
   DEFB $A0,$00,$00,$0A,$00,$00,$00,$00
   DEFB $A0,$00,$00,$0A,$00,$00,$00,$00
@@ -9125,6 +9161,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM24:
   DEFB $00,$00,$00,$A0,$00,$00,$00,$03 ; Room layout
   DEFB $00,$00,$00,$A0,$00,$00,$00,$03
   DEFB $00,$00,$00,$A0,$00,$00,$00,$03
@@ -9197,6 +9234,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM25:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$01,$00,$00
@@ -9269,6 +9307,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM26:
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00 ; Room layout
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
   DEFB $A0,$00,$0A,$00,$00,$00,$00,$00
@@ -9342,6 +9381,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM27:
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
   DEFB $00,$00,$00,$00,$00,$00,$00,$0A
@@ -9412,6 +9452,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM28:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$EA,$00,$00,$00,$00
@@ -9483,6 +9524,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM29:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -9561,6 +9603,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM2A:
   DEFB $00,$00,$00,$FF,$FF,$FF,$FF,$F0 ; Room layout
   DEFB $00,$00,$00,$00,$C3,$FC,$30,$00
   DEFB $00,$00,$00,$03,$F3,$FC,$FC,$00
@@ -9633,6 +9676,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM2B:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -9704,6 +9748,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM2C:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -9774,6 +9819,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM2D:
   DEFB $A0,$00,$00,$00,$00,$00,$AA,$AA ; Room layout
   DEFB $A0,$00,$00,$00,$00,$00,$AA,$AA
   DEFB $A0,$00,$00,$00,$00,$00,$AA,$AA
@@ -9846,6 +9892,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM2E:
   DEFB $AA,$0A,$AA,$AA,$AA,$AA,$AA,$AA ; Room layout
   DEFB $AA,$0A,$AA,$AA,$AA,$AA,$AA,$AA
   DEFB $AA,$0A,$AA,$AA,$AA,$AA,$AA,$AA
@@ -9919,6 +9966,7 @@ FLYINGPIG0:
 ; and 4, 3 and 2, or 1 and 0 of each byte) determines the type of tile
 ; (background, floor, wall or nasty) that will be drawn at the corresponding
 ; location.
+ROOM2F:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout (completely empty)
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -9937,52 +9985,40 @@ FLYINGPIG0:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
 ; The next 32 bytes specify the room name.
   DEFM "         [                      " ; Room name
-; In a working room definition, the next 80 bytes define the tiles, conveyor,
-; ramp, border colour, item graphic, and exits. In this room, however, there
-; are code remnants and unused data.
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background tile
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  INC B
-  LD (HL),$00
-  JP NZ,$62E3
-  INC (IX+$06)
-  DEFB $10,$FF
-  LD (IX+$0A),C
-  LD (HL),B
-  JP $5E56
-  LD BC,$6007
-  LD A,($408E)
-  JR NZ,$EFE3
-  PUSH HL
-  PUSH BC
-  PUSH AF
-  LD DE,$5EE8
-  PUSH DE
-  PUSH BC
-  RET
-  POP AF
-  POP BC
-  DEC A
-  DEFB $F2,$E0
-  DEFB $00                ; Conveyor length (deliberately set to 0)
-  POP HL
-  RET
-  POP BC
-  DEFB $00                ; Ramp length (deliberately set to 0)
-  LD A,(HL)
-  CP $2C
-  RET NZ
-  RST $10
-  PUSH BC
-  LD A,(HL)
-  CP $23
-  CALL Z,$1D78
-  CALL $2B1C
-  EX (SP),HL
-  PUSH HL
-  DEFB $11
-; The next eight pairs of bytes specify the entities (ropes, arrows, guardians)
-; in this room.
+; The next 54 bytes are copied to BACKGROUND and contain the attributes and
+; graphic data for the tiles used to build the room.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Floor
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Wall
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Nasty
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Ramp
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Conveyor
+; The next four bytes are copied to CONVDIR and specify the direction, location
+; and length of the conveyor.
+  DEFB $00                ; Direction (left)
+  DEFW $5F40              ; Location in the attribute buffer at 24064: (10,0)
+  DEFB $00                ; Length
+; The next four bytes are copied to RAMPDIR and specify the direction, location
+; and length of the ramp.
+  DEFB $01                ; Direction (up to the right)
+  DEFW $5FD8              ; Location in the attribute buffer at 24064: (14,24)
+  DEFB $00                ; Length
+; The next byte is copied to BORDER and specifies the border colour.
+  DEFB $00                ; Border colour
+; The next two bytes are copied to XROOM223, but are not used.
+  DEFB $00,$00            ; Unused
+; The next eight bytes are copied to ITEM and define the item graphic.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic
+; The next four bytes are copied to LEFT and specify the rooms to the left, to
+; the right, above and below.
+  DEFB $00                ; Room to the left ()
+  DEFB $00                ; Room to the right ()
+  DEFB $00                ; Room above ()
+  DEFB $00                ; Room below ()
+; The next three bytes are copied to XROOM237, but are not used.
+  DEFB $00,$00,$00        ; Unused
+; The next eight pairs of bytes are copied to ENTITIES and specify the entities
+; (ropes, arrows, guardians) in this room.
   DEFB $FF,$00            ; Terminator (ENTITY127)
   DEFB $00,$00            ; Nothing (ENTITYDEFS)
   DEFB $00,$00            ; Nothing (ENTITYDEFS)
@@ -10000,6 +10036,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM30:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10073,6 +10110,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM31:
   DEFB $00,$00,$00,$00,$00,$0C,$02,$AA ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$02,$AA
   DEFB $55,$40,$00,$00,$00,$00,$02,$AA
@@ -10148,6 +10186,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM32:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10219,6 +10258,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM33:
   DEFB $00,$00,$02,$AA,$A0,$00,$00,$00 ; Room layout
   DEFB $00,$00,$0A,$AA,$A0,$00,$00,$00
   DEFB $00,$00,$2A,$AA,$AA,$AA,$AA,$AA
@@ -10293,6 +10333,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM34:
   DEFB $00,$00,$00,$00,$0A,$AA,$AA,$AA ; Room layout
   DEFB $00,$00,$00,$00,$2A,$AA,$AA,$AA
   DEFB $00,$00,$00,$00,$55,$55,$55,$55
@@ -10365,6 +10406,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM35:
   DEFB $00,$00,$00,$00,$A0,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$A0,$00,$00,$00
   DEFB $00,$00,$00,$00,$A0,$00,$00,$00
@@ -10434,6 +10476,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM36:
   DEFB $00,$A0,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$A0,$00,$00,$00,$00,$00,$00
   DEFB $00,$A0,$00,$00,$00,$00,$00,$00
@@ -10506,6 +10549,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM37:
   DEFB $00,$00,$04,$00,$A0,$40,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$A0,$40,$00,$00
   DEFB $00,$00,$10,$00,$A0,$40,$00,$00
@@ -10577,6 +10621,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM38:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10649,6 +10694,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM39:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10720,6 +10766,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM3A:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10790,6 +10837,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM3B:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10861,6 +10909,7 @@ FLYINGPIG0:
 ; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
 ; the type of tile (background, floor, wall or nasty) that will be drawn at the
 ; corresponding location.
+ROOM3C:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
@@ -10924,357 +10973,215 @@ FLYINGPIG0:
   DEFB $00,$00            ; Nothing (ENTITYDEFS)
   DEFB $00,$00            ; Nothing (ENTITYDEFS)
 
-; Unused TRS-DOS code
-  ADD HL,BC
-  LD A,(DE)
-  CP $3B
-  JR Z,$FCD0
-  CP $0D
-  JR Z,$FCD0
-  PUSH HL
-  LD HL,$7800
-  LD B,$02
-  CALL $659E
-  POP BC
-  JR NC,$FD1C
-  LD DE,$67B3
-  JP $6459
-  CALL $754A
-  JR NZ,$FD16
-  CALL $5BB4
-  CALL NZ,$5BED
-  LD E,(HL)
-  INC HL
-  LD A,(HL)
-  LD ($542E),A
-  LD A,($5433)
-  OR A
-  JR Z,$FD43
-  LD A,E
-  CP $20
-  JR C,$FD3C
-  CP $25
-  JR C,$FD43
-  LD A,($5306)
-  OR A
-  JP Z,$6BE4
-  LD HL,$7A30
-  LD D,$00
-  ADD HL,DE
-  ADD HL,DE
-  LD A,(HL)
-  INC HL
-  LD H,(HL)
-  LD L,A
-  LD A,E
-  LD DE,$7557
-  EX DE,HL
-  EX (SP),HL
-  EX DE,HL
-  PUSH HL
-  INC C
-  DEC C
-  RET Z
-  CP $18
-  LD A,$01
-  LD HL,($5434)
-  RET NC
-  PUSH HL
-  PUSH AF
-  LD HL,($5441)
-  LD B,$02
-  CALL $659E
-  JR NC,$FDA4
-  PUSH DE
-  PUSH BC
-  CALL $7787
-  LD HL,($5441)
-  LD A,C
-  ADD A,B
-  INC A
-  LD C,A
-  XOR A
-  LD B,A
-  SBC HL,BC
-  RST $18
-  JR NC,$FD91
-  LD HL,$681C
-  PUSH HL
-  LD A,($5312)
-  OR A
-  JR Z,$FD8D
-  CALL $7771
-  POP HL
-  JP $5792
-  LD ($5441),HL
-  POP BC
-  POP DE
-  PUSH BC
-  LD (HL),C
-  EX DE,HL
-  INC DE
-  LD B,$00
-  LDIR
-  EX DE,HL
-  LD (HL),B
-  INC HL
-  LD (HL),B
-  DEC HL
-  POP BC
-  POP DE
-  PUSH HL
-  XOR A
-  LD B,A
-  INC BC
-  SBC HL,BC
-  LD A,($543E)
-  CP $02
-  JR NZ,$FDB9
-  LD A,($56C3)
-  OR A
-  CALL NZ,$6D20
-  INC D
-  DEC D
-  JR NZ,$FDD6
-  LD A,(HL)
-  AND $80
-  LD DE,$683D
-  CALL Z,$645E
-  LD A,(HL)
-  AND $40
-  LD DE,$6805
-  CALL NZ,$645E
-  POP HL
-  LD A,(HL)
-  INC HL
-  LD H,(HL)
-  LD L,A
-  POP DE
-  RET
-  LD A,(HL)
-  OR A
-  JP P,$6D12
-  LD A,D
-  EX (SP),HL
-  POP BC
-  POP DE
-  PUSH DE
-  PUSH HL
-  PUSH AF
-  LD A,(HL)
-  INC HL
-  LD H,(HL)
-  LD L,A
-  RST $18
-  POP DE
-  JR Z,$FE06
-  LD A,(BC)
-  AND $5F
-  DEFB $45,$5F,$45,$FF,$45,$5F,$45,$5F,$45,$5F,$45,$5F,$45,$5F,$45,$5F
-  DEFB $45,$91,$35,$D2,$44,$A1,$42,$79,$44,$54,$00,$7A,$44,$BD,$44,$45
-  DEFB $01,$00,$43,$F5,$FE,$04,$4F,$00,$43,$89,$47,$67,$72,$00,$00,$6F
-  DEFB $49,$26,$4D,$00,$4C,$00,$43,$36,$4D,$CC,$4C,$99,$4C,$BF,$64,$41
-  DEFB $4C,$01,$53,$2B,$53,$78,$1D,$E6,$4B,$2D,$53,$1E,$1D,$00,$00,$00
-  DEFB $7A,$44,$BD,$44,$45,$01,$00,$43,$F5,$FE,$04,$4F,$00,$43,$89,$47
-  DEFB $67,$72,$00,$00,$6F,$49,$26,$4D,$00,$4C,$4A,$6D,$2B,$60,$E8,$5E
-  DEFB $42,$00,$28,$60,$4A,$6D,$0E,$5F,$2C,$00,$47,$6D,$8F,$1B,$46,$54
-  DEFB $00,$00,$00,$18,$62,$FF,$FF,$06
-  DEFM "TRSHDx"
-  LD HL,$4448
-  LD ($3C3E),HL
-  LD A,$10
-  OUT ($C1),A
-  LD B,$40
-  CALL $0060
-  LD HL,ROOMNAME
-  LD ($3C3E),HL
-  LD A,$0C
-  OUT ($C1),A
-  EX (SP),HL
-  EX (SP),HL
-  IN A,($CF)
-  CP $50
-  JR NZ,$FE7B
-  XOR A
-  OUT ($CE),A
-  LD A,$10
-  OUT ($CF),A
-  LD B,$32
-  CALL $0060
-  IN A,($CF)
-  BIT 7,A
-  JR NZ,$FEA8
-  BIT 0,A
-  JR NZ,$FE7B
-  RET
-  DEFB $00,$00
-  DEFM "TRSHDx(C) Copyright 1982 by LSI"
-  LD A,$07
-  CP B
-  JR Z,$FF1D
-  BIT 3,B
-  JR NZ,$FEDF
-  XOR A
-  RET
-  BIT 2,B
-  PUSH HL
-  JR NZ,$FF14
-  BIT 1,B
-  JR Z,$FEEB
-  LD HL,$0000
-  PUSH DE
-  CALL $FF92
-  LD A,$20
-  OUT ($CF),A
-  EX (SP),HL
-  EX (SP),HL
-  IN A,($CF)
-  RLCA
-  JR C,$FEF5
-  LD BC,$00C8
-  INIR
-  IN A,($CF)
-  RRCA
-  LD HL,$FF81
-  JR C,$FF4D
-  POP DE
-  PUSH DE
-  LD A,D
-  CP (IY+$09)
-  LD A,$06
-  JR Z,$FF54
-  XOR A
-  JR $FF54
-  CALL $FF1D
-  JR Z,$FF34
-  POP HL
-  LD A,$0F
-  RET
-  LD A,(IY+$03)
-  AND $03
-  LD C,A
-  IN A,($C0)
-  CALL C,$0D07
-  JR NZ,$FF26
-  OR (IY+$03)
-  BIT 7,A
-  LD A,$40
-  RET NZ
-  XOR A
-  RET
-  PUSH DE
-  LD A,B
-  CP $0F
-  JR Z,$FF58
-  CP $0C
-  LD A,$08
-  JR Z,$FF54
-  CALL $FF92
-  LD A,$30
-  CALL $FFDA
-  JR Z,$FF54
-  LD HL,$FF89
-  IN A,($C9)
-  RLCA
-  INC HL
-  JR NC,$FF4F
-  LD A,(HL)
-  OR A
-  POP DE
-  POP HL
-  RET
-  LD A,(IY+$07)
-  LD B,A
-  AND $1F
-  LD E,A
-  XOR B
-  RLCA
-  RLCA
-  RLCA
-  INC A
-  LD B,A
-  PUSH BC
-  PUSH DE
-  CALL $FF92
-  PUSH HL
-  LD A,(HL)
-  OUT ($CA),A
-  INC HL
-  LD A,$50
-  CALL $FFDA
-  POP HL
-  POP DE
-  POP BC
-  JR NZ,$FF4A
-  LD A,$20
-  ADD A,E
-  LD E,A
-  DJNZ $FF65
-  XOR A
-  JR $FF54
-  DEFB $07,$04,$01,$05,$7F,$08,$02,$03
-  DEFB $0E,$0C,$09,$0D,$7F,$08,$0A,$0B
-  PUSH HL
-  LD L,D
-  LD H,$00
-  BIT 5,(IY+$04)
-  JR Z,$FF9D
-  ADD HL,HL
-  LD A,(IY+$07)
-  PUSH DE
-  LD D,A
-  AND $1F
-  LD E,A
-  INC E
-  LD C,E
-  XOR D
-  RLCA
-  RLCA
-  RLCA
-  INC A
-  CALL $4B6B
-  DEC A
-  POP DE
-  CP E
-  JR NC,$FFB8
-  CPL
-  ADD A,E
-  LD E,A
-  INC HL
-  LD A,C
-  CALL $4B7A
-  LD D,A
-  LD A,(IY+$04)
-  AND $0F
-  ADD A,D
-  LD D,A
-  LD A,(IY+$03)
-  AND $03
-  RLCA
-  RLCA
-  RLCA
-  OR D
-  OUT ($CE),A
-  LD A,E
-  OUT ($CB),A
-  LD A,L
-  OUT ($CC),A
-  LD A,H
-  OUT ($CD),A
-  POP HL
-  RET
-  OUT ($CF),A
-  LD BC,$00C8
-  OTIR
-  EX (SP),HL
-  EX (SP),HL
-  IN A,($CF)
-  RLCA
-  JR C,$FFE3
-  IN A,($CF)
-  AND $01
-  RET
-  DEFS $13
+; Room 0x3D: [ (teleport: 134569)
+;
+; This room is not used.
+;
+; The first 128 bytes define the room layout. Each bit-pair (bits 7 and 6, 5
+; and 4, 3 and 2, or 1 and 0 of each byte) determines the type of tile
+; (background, floor, wall or nasty) that will be drawn at the corresponding
+; location.
+ROOM3D:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout (completely empty)
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+; The next 32 bytes specify the room name.
+  DEFM "         [                      " ; Room name
+; The next 54 bytes are copied to BACKGROUND and contain the attributes and
+; graphic data for the tiles used to build the room.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Floor
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Wall
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Nasty
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Ramp
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Conveyor
+; The next four bytes are copied to CONVDIR and specify the direction, location
+; and length of the conveyor.
+  DEFB $00                ; Direction (left)
+  DEFW $5F40              ; Location in the attribute buffer at 24064: (10,0)
+  DEFB $00                ; Length
+; The next four bytes are copied to RAMPDIR and specify the direction, location
+; and length of the ramp.
+  DEFB $01                ; Direction (up to the right)
+  DEFW $5FD8              ; Location in the attribute buffer at 24064: (14,24)
+  DEFB $00                ; Length
+; The next byte is copied to BORDER and specifies the border colour.
+  DEFB $00                ; Border colour
+; The next two bytes are copied to XROOM223, but are not used.
+  DEFB $00,$00            ; Unused
+; The next eight bytes are copied to ITEM and define the item graphic.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic
+; The next four bytes are copied to LEFT and specify the rooms to the left, to
+; the right, above and below.
+  DEFB $00                ; Room to the left ()
+  DEFB $00                ; Room to the right ()
+  DEFB $00                ; Room above ()
+  DEFB $00                ; Room below ()
+; The next three bytes are copied to XROOM237, but are not used.
+  DEFB $00,$00,$00        ; Unused
+; The next eight pairs of bytes are copied to ENTITIES and specify the entities
+; (ropes, arrows, guardians) in this room.
+  DEFB $FF,$00            ; Terminator (ENTITY127)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+
+; Room 0x3E: [ (teleport: 234569)
+;
+; This room is not used.
+;
+; The first 128 bytes define the room layout. Each bit-pair (bits 7 and 6, 5
+; and 4, 3 and 2, or 1 and 0 of each byte) determines the type of tile
+; (background, floor, wall or nasty) that will be drawn at the corresponding
+; location.
+ROOM3E:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout (completely empty)
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+; The next 32 bytes specify the room name.
+  DEFM "         [                      " ; Room name
+; The next 54 bytes are copied to BACKGROUND and contain the attributes and
+; graphic data for the tiles used to build the room.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Floor
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Wall
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Nasty
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Ramp
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Conveyor
+; The next four bytes are copied to CONVDIR and specify the direction, location
+; and length of the conveyor.
+  DEFB $00                ; Direction (left)
+  DEFW $5F40              ; Location in the attribute buffer at 24064: (10,0)
+  DEFB $00                ; Length
+; The next four bytes are copied to RAMPDIR and specify the direction, location
+; and length of the ramp.
+  DEFB $01                ; Direction (up to the right)
+  DEFW $5FD8              ; Location in the attribute buffer at 24064: (14,24)
+  DEFB $00                ; Length
+; The next byte is copied to BORDER and specifies the border colour.
+  DEFB $00                ; Border colour
+; The next two bytes are copied to XROOM223, but are not used.
+  DEFB $00,$00            ; Unused
+; The next eight bytes are copied to ITEM and define the item graphic.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic
+; The next four bytes are copied to LEFT and specify the rooms to the left, to
+; the right, above and below.
+  DEFB $00                ; Room to the left ()
+  DEFB $00                ; Room to the right ()
+  DEFB $00                ; Room above ()
+  DEFB $00                ; Room below ()
+; The next three bytes are copied to XROOM237, but are not used.
+  DEFB $00,$00,$00        ; Unused
+; The next eight pairs of bytes are copied to ENTITIES and specify the entities
+; (ropes, arrows, guardians) in this room.
+  DEFB $FF,$00            ; Terminator (ENTITY127)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+
+; Room 0x3F: [ (teleport: 1234569)
+;
+; This room is not used.
+;
+; The first 128 bytes define the room layout. Each bit-pair (bits 7 and 6, 5
+; and 4, 3 and 2, or 1 and 0 of each byte) determines the type of tile
+; (background, floor, wall or nasty) that will be drawn at the corresponding
+; location.
+ROOM3F:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Room layout (completely empty)
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+; The next 32 bytes specify the room name.
+  DEFM "         [                      " ; Room name
+; The next 54 bytes are copied to BACKGROUND and contain the attributes and
+; graphic data for the tiles used to build the room.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Floor
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Wall
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Nasty
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Ramp
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Conveyor
+; The next four bytes are copied to CONVDIR and specify the direction, location
+; and length of the conveyor.
+  DEFB $00                ; Direction (left)
+  DEFW $5F40              ; Location in the attribute buffer at 24064: (10,0)
+  DEFB $00                ; Length
+; The next four bytes are copied to RAMPDIR and specify the direction, location
+; and length of the ramp.
+  DEFB $01                ; Direction (up to the right)
+  DEFW $5FD8              ; Location in the attribute buffer at 24064: (14,24)
+  DEFB $00                ; Length
+; The next byte is copied to BORDER and specifies the border colour.
+  DEFB $00                ; Border colour
+; The next two bytes are copied to XROOM223, but are not used.
+  DEFB $00,$00            ; Unused
+; The next eight bytes are copied to ITEM and define the item graphic.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic
+; The next four bytes are copied to LEFT and specify the rooms to the left, to
+; the right, above and below.
+  DEFB $00                ; Room to the left ()
+  DEFB $00                ; Room to the right ()
+  DEFB $00                ; Room above ()
+  DEFB $00                ; Room below ()
+; The next three bytes are copied to XROOM237, but are not used.
+  DEFB $00,$00,$00        ; Unused
+; The next eight pairs of bytes are copied to ENTITIES and specify the entities
+; (ropes, arrows, guardians) in this room.
+  DEFB $FF,$00            ; Terminator (ENTITY127)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
 
   END BEGIN
 
