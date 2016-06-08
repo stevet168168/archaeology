@@ -859,15 +859,8 @@ TITLESCREEN:
   LD (HL),$30
   INC HL
   LD (HL),$30
-  LD H,ITEMTABLE1/$100    ; Page A4 holds the first byte of each entry in the
-                          ; item table
-  LD A,(FIRSTITEM)        ; Pick up the index of the first item from FIRSTITEM
-  LD L,A                  ; Point HL at the entry for the first item
+  LD A,(ITEMTABLE1)       ; Pick up the index of the first item
   LD (ITEMS),A            ; Initialise the counter of items remaining at ITEMS
-TITLESCREEN_0:
-  SET 6,(HL)              ; Set the collection flag for every item in the item
-  INC L                   ; table at ITEMTABLE1
-  JR NZ,TITLESCREEN_0
   LD HL,MUSICFLAGS        ; Initialise the keypress flag in bit 0 at MUSICFLAGS
   SET 0,(HL)
 ; Next, prepare the screen.
@@ -1029,7 +1022,7 @@ STARTGAME:
 ; above).
 STARTGAME_0:
   LD A,(ROOM)             ; Pick up the current room number from ROOM
-  OR $C0                  ; Point HL at the first byte of the room definition
+  XOR $C0                 ; Point HL at the first byte of the room definition
   LD H,A
   LD L,$00
   LD DE,ROOMLAYOUT        ; Copy the room definition into the game status
@@ -2854,19 +2847,18 @@ DRAWTHINGS_22:
 DRAWITEMS:
   LD H,ITEMTABLE1/$100    ; Page 164 holds the first byte of each entry in the
                           ; item table
-  LD A,(FIRSTITEM)        ; Pick up the index of the first item from FIRSTITEM
+  LD A,(ITEMS)            ; Pick up the index of the first item from ITEMS
   LD L,A                  ; Point HL at the first byte of the first entry in
                           ; the item table
+  AND A                    ; return if all items collected
 ; The item-drawing loop begins here.
 DRAWITEMS_0:
+  RET Z
   LD C,(HL)               ; Pick up the first byte of the current entry in the
                           ; item table
-  RES 7,C                 ; Reset bit 7; bit 6 holds the collection flag, and
-                          ; bits 0-5 hold the room number
+  RES 7,C                 ; Reset bit 7; C then holds the room number
   LD A,(ROOM)             ; Pick up the number of the current room from ROOM
-  OR $40                  ; Set bit 6 (corresponding to the collection flag)
-  CP C                    ; Is the item in the current room and still
-                          ; uncollected?
+  CP C                    ; Is the item in the current room?
   JR NZ,DRAWITEMS_7       ; If not, jump to consider the next entry in the item
                           ; table
 ; This item is in the current room and has not been collected yet.
@@ -2917,12 +2909,23 @@ DRAWITEMS_4:
   LD A,(ITEMS)            ; Update the counter of items remaining at ITEMS, and
   INC A                   ; set the zero flag if there are no more items to
   LD (ITEMS),A            ; collect
-  JR NZ,DRAWITEMS_5       ; Jump if there are any items still to be collected
-  LD A,$01                ; Update the game mode indicator at MODE to 1 (all
-  LD (MODE),A             ; items collected)
-DRAWITEMS_5:
-  RES 6,(HL)              ; Reset bit 6 of the first byte of the entry in the
-                          ; item table: the item has been collected
+  RET Z                   ; return if no more items to display
+  DEC A                   ; revert ITEMS value in A
+  LD E,A                  ; swap this item with first uncollected item
+  LD D,H                  ; as that item will be ignorred next time
+  LD C,(HL)
+  LD A,(DE)
+  LD (HL),A
+  LD A,C
+  LD (DE),A
+  INC H
+  INC D
+  LD C,(HL)
+  LD A,(DE)
+  LD (HL),A
+  LD A,C
+  LD (DE),A
+  DEC H
   JR DRAWITEMS_7          ; Jump to consider the next entry in the item table
 ; Willy is not touching this item, so draw it and cycle its INK colour.
 DRAWITEMS_6:
@@ -2954,8 +2957,7 @@ DRAWITEMS_6:
 DRAWITEMS_7:
   INC L                   ; Point HL at the first byte of the next entry in the
                           ; item table
-  JR NZ,DRAWITEMS_0       ; Jump back unless we've examined every entry
-  RET
+  JP DRAWITEMS_0          ; Jump back
 
 ; Draw a sprite
 ;
@@ -3154,9 +3156,9 @@ BEDANDBATH:
   LD A,(ROOM)             ; Pick up the number of the current room from ROOM
   CP $23                  ; Are we in Master Bedroom?
   JR NZ,DRAWTOILET        ; Jump if not
-  LD A,(MODE)             ; Pick up the game mode indicator from MODE
+  LD A,(ITEMS)            ; Pick up the items count from ITEMS
   OR A                    ; Has Willy collected all the items?
-  JR NZ,BEDANDBATH_1      ; Jump if so
+  JR Z,BEDANDBATH_1       ; Jump if so
 ; Willy hasn't collected all the items yet, so Maria is on guard.
   LD A,(TICKS)            ; Pick up the minute counter from TICKS; this will
                           ; determine Maria's animation frame
@@ -5437,22 +5439,23 @@ ENTITY111:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
-; The following entity definition (0x7F) - whose eighth byte is at FIRSTITEM -
+; The following entity definition (0x7F) 
 ; is copied into the entity buffer at ENTITYBUF for any entity specification
 ; whose first byte is $7F or $FF; the first byte of the definition ($FF) serves
 ; to terminate the entity buffer.
 ENTITY127:
-  DEFB $FF,$00,$00,$00,$00,$00,$00
+  DEFB $FF,$00,$00,$00,$00,$00,$00,$00
+
+; Item table
+;
 
 ; Index of the first item
 ;
 ; Used by the routines at TITLESCREEN and DRAWITEMS.
-FIRSTITEM:
+ITEMTABLE1:
   DEFB $AD
 
-; Item table
-;
-; Used by the routines at TITLESCREEN and DRAWITEMS.
+; Used by the routine at DRAWITEMS.
 ;
 ; The location of item N (173<=N<=255) is defined by the pair of bytes at
 ; addresses ITEMTABLE1+N and ITEMTABLE2+N. The meaning of the bits in each
@@ -5462,13 +5465,11 @@ FIRSTITEM:
 ; | Bit(s) | Meaning                                            |
 ; +--------+----------------------------------------------------+
 ; | 15     | Most significant bit of the y-coordinate           |
-; | 14     | Collection flag (reset=collected, set=uncollected) |
-; | 8-13   | Room number                                        |
+; | 8-14   | Room number                                        |
 ; | 5-7    | Least significant bits of the y-coordinate         |
 ; | 0-4    | x-coordinate                                       |
 ; +--------+----------------------------------------------------+
-ITEMTABLE1:
-  DEFS $AD                ; Unused
+  DEFS $AC                ; Unused
   DEFB $B2                ; Item 173 at (8,25) in Watch Tower
   DEFB $B2                ; Item 174 at (9,10) in Watch Tower
   DEFB $B2                ; Item 175 at (9,20) in Watch Tower
@@ -5585,7 +5586,7 @@ ITEMTABLE2:
   DEFB $DD                ; Item 196 at (6,29) in The Chapel
   DEFB $37                ; Item 197 at (9,23) in Above the West Bedroom
   DEFB $B6                ; Item 198 at (13,22) in The Beach
-  DEFB $7B                ; Item 199 at (4,26) in The Hall
+  DEFB $9A                ; Item 199 at (4,26) in The Hall
   DEFB $22                ; Item 200 at (9,2) in Top Landing
   DEFB $43                ; Item 201 at (2,3) in Cold Store
   DEFB $A8                ; Item 202 at (5,8) in Cold Store
