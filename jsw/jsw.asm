@@ -5663,7 +5663,80 @@ TOILET3:
   DEFB $00,$0F,$04,$3F,$1E,$2F,$3B,$2F,$5D,$8F,$0E,$8F,$07,$CF,$0F,$CF
   DEFB $00,$08,$3F,$F8,$3F,$F0,$3F,$EE,$1F,$DF,$1F,$DB,$0F,$FB,$0F,$FB
 
-  DEFS $0480
+  DEFS $80
+
+; Room 0x67: Empty Room One (teleport: ???)
+;
+; Used by the routine at STARTGAME.
+;
+; The first 128 bytes are copied to ROOMLAYOUT and define the room layout. Each
+; bit-pair (bits 7 and 6, 5 and 4, 3 and 2, or 1 and 0 of each byte) determines
+; the type of tile (background, floor, wall or nasty) that will be drawn at the
+; corresponding location.
+ROOM67:
+  DEFB $A0,$00,$00,$00,$00,$00,$00,$0A ; Room layout
+  DEFB $A0,$00,$00,$00,$00,$00,$00,$0A
+  DEFB $A0,$00,$00,$00,$00,$00,$00,$0A
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $A5,$55,$55,$55,$55,$55,$55,$5A
+  DEFB $BF,$FF,$FF,$FF,$FF,$FF,$FF,$FE
+  DEFB $BF,$FF,$FF,$00,$00,$FF,$FF,$FE
+  DEFB $BF,$FF,$F0,$00,$00,$0F,$FF,$FE
+  DEFB $BF,$FF,$00,$00,$00,$00,$FF,$FE
+  DEFB $BF,$F0,$00,$00,$00,$00,$0F,$FE
+  DEFB $BF,$00,$00,$00,$00,$00,$00,$FE
+  DEFB $B0,$00,$00,$00,$00,$00,$00,$0E
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $95,$55,$55,$55,$55,$55,$55,$56
+; The next 32 bytes are copied to ROOMNAME and specify the room name.
+  DEFM "           Empty Room           " ; Room name
+; The next 54 bytes are copied to BACKGROUND and contain the attributes and
+; graphic data for the tiles used to build the room.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00 ; Background
+  DEFB $16,$00,$40,$09,$64,$92,$2D,$96,$FF ; Floor
+  DEFB $0E,$1F,$AA,$00,$55,$F8,$55,$00,$AA ; Wall
+  DEFB $02,$3C,$18,$99,$FF,$FF,$99,$18,$3C ; Nasty
+  DEFB $07,$03,$00,$0C,$00,$30,$00,$C0,$00 ; Ramp
+  DEFB $3D,$A5,$00,$00,$00,$00,$00,$00,$FF ; Conveyor
+; The next four bytes are copied to CONVDIR and specify the direction, location
+; and length of the conveyor.
+  DEFB $00                ; Direction (left)
+  DEFW $5FD4              ; Location in the attribute buffer at 24064: (14,20)
+  DEFB $00                ; Length
+; The next four bytes are copied to RAMPDIR and specify the direction, location
+; and length of the ramp.
+  DEFB $01                ; Direction (up to the right)
+  DEFW $5F89              ; Location in the attribute buffer at 24064: (12,9)
+  DEFB $00                ; Length
+; The next byte is copied to BORDER and specifies the border colour.
+  DEFB $02                ; Border colour
+; The next two bytes are copied to XROOM223, but are not used.
+  DEFB $00,$00            ; Unused
+; The next eight bytes are copied to ITEM and define the item graphic.
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic
+; The next four bytes are copied to LEFT and specify the rooms to the left, to
+; the right, above and below.
+  DEFB $22                ; Room to the left (Top Landing)
+  DEFB $21                ; Room to the right (The Bathroom)
+  DEFB $67                ; Room above (Empty Room)
+  DEFB $67                ; Room below (Empty Room)
+; The next three bytes are copied to XROOM237, but are not used.
+  DEFB $00,$00,$00        ; Unused
+; The next eight pairs of bytes are copied to ENTITIES and specify the entities
+; (ropes, arrows, guardians) in this room.
+  DEFB $3B,$10            ; Guardian no. 0x3B (horizontal), base sprite 0,
+                          ; initial x=16 (ENTITY59)
+  DEFB $FF,$00            ; Terminator (ENTITY127)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+  DEFB $00,$00            ; Nothing (ENTITYDEFS)
+
+  DEFS $300
 
 ; Guardian graphics
 ;
@@ -8561,7 +8634,7 @@ ROOM21:
   DEFB $1F,$04,$0A,$77,$87,$B1,$AA,$0A ; Item graphic
 ; The next four bytes are copied to LEFT and specify the rooms to the left, to
 ; the right, above and below.
-  DEFB $22                ; Room to the left (Top Landing)
+  DEFB $67                ; Room to the left (Empty Room)
   DEFB $20                ; Room to the right (Halfway up the East Wall)
   DEFB $27                ; Room above (Emergency Generator)
   DEFB $1B                ; Room below (The Chapel)
@@ -8633,7 +8706,7 @@ ROOM22:
 ; The next four bytes are copied to LEFT and specify the rooms to the left, to
 ; the right, above and below.
   DEFB $23                ; Room to the left (Master Bedroom)
-  DEFB $21                ; Room to the right (The Bathroom)
+  DEFB $67                ; Room to the right (Empty Room)
   DEFB $28                ; Room above (Dr Jones will never believe this)
   DEFB $1C                ; Room below (First Landing)
 ; The next three bytes are copied to XROOM237, but are not used.
