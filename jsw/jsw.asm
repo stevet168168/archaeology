@@ -1521,7 +1521,7 @@ ENDPAUSE_0:
 ; Now read the keys H, J, K, L and ENTER (which toggle the in-game music).
   LD B,$BF                ; Prepare B for reading keys H-J-K-L-ENTER
   LD HL,MUSICFLAGS        ; Point HL at the music flags at MUSICFLAGS
-  IN A,(C)                ; Read keys H-J-K-L-ENTER; note that if the game has
+  IN A,($FE)              ; Read keys H-J-K-L-ENTER; note that if the game has
                           ; just resumed after being paused, C holds 0 instead
                           ; of 254, which is a bug
   AND $1F                 ; Are any of these keys being pressed?
@@ -5919,7 +5919,7 @@ ITEMTABLE1:
   DEFB $1B                ; Item 196 at (6,29) in The Chapel
   DEFB $B9                ; Item 197 at (9,23) in Above the West Bedroom
   DEFB $BA                ; Item 198 at (13,22) in The Beach
-  DEFB $1C                ; Item 199 at (3,26) in First Landing
+  DEFB $0B                ; Item 199 at (4,26) in The Hall
   DEFB $A2                ; Item 200 at (9,2) in Top Landing
   DEFB $19                ; Item 201 at (2,3) in Cold Store
   DEFB $19                ; Item 202 at (5,8) in Cold Store
@@ -6008,7 +6008,7 @@ ITEMTABLE2:
   DEFB $DD                ; Item 196 at (6,29) in The Chapel
   DEFB $37                ; Item 197 at (9,23) in Above the West Bedroom
   DEFB $B6                ; Item 198 at (13,22) in The Beach
-  DEFB $7A                ; Item 199 at (3,26) in First Landing
+  DEFB $7B                ; Item 199 at (4,26) in The Hall
   DEFB $22                ; Item 200 at (9,2) in Top Landing
   DEFB $43                ; Item 201 at (2,3) in Cold Store
   DEFB $A8                ; Item 202 at (5,8) in Cold Store
@@ -7355,7 +7355,7 @@ ROOM0B:
 ; The next two bytes are copied to XROOM223, but are not used.
   DEFB $00,$00            ; Unused
 ; The next eight bytes are copied to ITEM and define the item graphic.
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Item graphic (unused)
+  DEFB $18,$18,$3C,$7E,$62,$62,$62,$7E ; Item graphic
 ; The next four bytes are copied to LEFT and specify the rooms to the left, to
 ; the right, above and below.
   DEFB $14                ; Room to the left (Ballroom East)
@@ -8737,7 +8737,7 @@ ROOM1E:
   DEFB $00,$00,$00,$90,$00,$00,$00,$00
   DEFB $00,$00,$00,$94,$00,$00,$00,$00
   DEFB $00,$00,$00,$95,$50,$00,$00,$00
-  DEFB $00,$00,$00,$81,$08,$00,$00,$00
+  DEFB $00,$00,$00,$81,$04,$00,$00,$00
   DEFB $00,$00,$00,$01,$04,$00,$00,$00
   DEFB $00,$00,$00,$00,$04,$00,$00,$00
   DEFB $00,$00,$00,$80,$00,$00,$00,$00
@@ -9685,7 +9685,7 @@ ROOM2B:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$2A,$AA,$AA
-  DEFB $00,$00,$00,$00,$00,$30,$C3,$0C
+  DEFB $00,$00,$00,$00,$00,$30,$C3,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
