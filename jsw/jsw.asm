@@ -1313,14 +1313,14 @@ ENDPAUSE:
 ; This entry point is used by the routine at MAINLOOP.
 ENDPAUSE_0:
   LD A,(AIRBORNE)         ; Pick up the airborne status indicator from AIRBORNE
-  CP $FF                  ; Has Willy landed after falling from too great a
+  INC A                   ; Has Willy landed after falling from too great a
                           ; height, or collided with a nasty, an arrow, a
                           ; guardian, or Maria?
   JP Z,LOSELIFE           ; If so, lose a life
 ; Now read the keys H, J, K, L and ENTER (which toggle the in-game music).
-  LD B,$BF                ; Prepare B for reading keys H-J-K-L-ENTER
+  LD BC,$BFFE             ; Prepare B for reading keys H-J-K-L-ENTER
   LD HL,MUSICFLAGS        ; Point HL at the music flags at MUSICFLAGS
-  IN A,($FE)              ; Read keys H-J-K-L-ENTER; note that if the game has
+  IN A,(C)                ; Read keys H-J-K-L-ENTER; note that if the game has
                           ; just resumed after being paused, C holds 0 instead
                           ; of 254, which is a bug
   AND $1F                 ; Are any of these keys being pressed?
