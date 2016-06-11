@@ -200,30 +200,24 @@ ENTITIES:
 ; | 7    | Unused                                                    |
 ; +------+-----------------------------------------------------------+
 ;
-; The rope uses the second and fourth bytes of the following slot in addition
-; to its own; these ten bytes are used as follows:
+; For a rope, the eight bytes are used as follows:
 ;
 ; +------+----------------------------------------------------------+
 ; | Byte | Contents                                                 |
 ; +------+----------------------------------------------------------+
 ; | 0    | Bit 7: direction (0=left, 1=right)                       |
-; |      | Bits 3-6: unused                                         |
+; |      | Bit 6: Willy is on the rope (set), or not (reset)        |
+; |      | Bits 3-5: unused                                         |
 ; |      | Bits 0-2: entity type (011)                              |
 ; | 1    | Animation frame index                                    |
 ; | 2    | x-coordinate of the top of the rope                      |
 ; | 3    | x-coordinate of the segment of rope being drawn          |
 ; | 4    | Length (32)                                              |
 ; | 5    | Segment drawing byte                                     |
-; | 6    | Unused                                                   |
+; | 6    | Index of the segment of rope being drawn (0-31)          |
 ; | 7    | Animation frame at which the rope changes direction (54) |
-; | 9    | Index of the segment of rope being drawn (0-31)          |
-; | 11   | Bit 7: Willy is on the rope (set), or not (reset)        |
-; |      | Bits 0-6: unused                                         |
 ; +------+----------------------------------------------------------+
 ;
-; Note that if a rope were the eighth entity specified in a room, its buffer
-; would use the first and third bytes in the otherwise unused area at
-; EBOVERFLOW.
 ENTITYBUF:
   DEFS $08                ; Entity 1
   DEFS $08                ; Entity 2
@@ -236,11 +230,6 @@ ENTITYBUF:
   DEFB $FF                ; Terminator
 
 ; Unused
-;
-; This area is not used, but if a rope were the eighth entity specified in a
-; room, its buffer would spill over from the eighth slot in the entity buffer
-; at ENTITYBUF and use the first and third bytes here.
-EBOVERFLOW:
   DEFS $BF
 
 ; Screen buffer address lookup table
@@ -423,43 +412,6 @@ ROPEANIM:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00
   DEFB $00,$00
 
-; The game has just loaded
-;
-; After the game has loaded, this is where it all starts.
-BEGIN:
-  DI                      ; Disable interrupts
-  LD HL,$5BFF             ; Place the address of TITLESCREEN on the stack
-  LD (HL),TITLESCREEN / 256
-  DEC HL
-  LD (HL),TITLESCREEN % 256
-  LD SP,$5BFE
-  SUB A                   ; Set HL=8500 in a roundabout way
-  LD L,A
-  XOR $0A
-  LD B,A
-  INC B
-  LD H,B
-  RRC H
-BEGIN_0:
-  LD C,(HL)               ; Read through addresses 8500-FFFF, without changing
-  LD A,L                  ; their contents; perhaps this code was once used to
-  XOR C                   ; descramble the contents of pages 133-255, but now
-  XOR H                   ; all it does is introduce a pause of about 0.47s
-  LD (HL),C               ; before displaying the code entry screen
-  INC HL
-  BIT 7,H
-  JR NZ,BEGIN_0
-  RET                     ; Make an indirect jump to TITLESCREEN
-
-; Current room number
-;
-; Initialised to 33 (The Bathroom) by the routine at TITLESCREEN, checked by
-; the routines at STARTGAME, DRAWTHINGS, DRAWITEMS, BEDANDBATH, CHKTOILET,
-; DRAWTOILET and DRAWWILLY, and updated by the routines at ENDPAUSE, ROOMLEFT,
-; ROOMRIGHT, ROOMABOVE and ROOMBELOW.
-ROOM:
-  DEFB $00
-
 ; Left-right movement table
 ;
 ; Used by the routine at MOVEWILLY2. The entries in this table are used to map
@@ -516,11 +468,6 @@ TRIANGLE2:
 TRIANGLE3:
   DEFB $FC,$F0,$C0,$00,$00,$00,$00,$00
 
-; 'AIR'
-;
-; This message is not used.
-  DEFM "AIR"
-
 ; '+++++ Press ENTER to Start +++++...'
 ;
 ; Used by the routine at TITLESCREEN.
@@ -571,15 +518,14 @@ MSG_CURTIME:
 MSG_7AM:
   DEFM " 7:00a"
 
-; 'Enter Code at grid location     '
+; Current room number
 ;
-; This message is not used.
-  DEFM "Enter Code at grid location     "
-
-; 'Sorry, try code at location     '
-;
-; This message is not used.
-  DEFM "Sorry, try code at location     "
+; Initialised to 33 (The Bathroom) by the routine at TITLESCREEN, checked by
+; the routines at STARTGAME, DRAWTHINGS, DRAWITEMS, BEDANDBATH, CHKTOILET,
+; DRAWTOILET and DRAWWILLY, and updated by the routines at ENDPAUSE, ROOMLEFT,
+; ROOMRIGHT, ROOMABOVE and ROOMBELOW.
+ROOM:
+  DEFB $00
 
 ; Minute counter
 ;
@@ -599,14 +545,6 @@ TICKS:
 ; LOSELIFE, and used by the routines at DRAWLIVES (when drawing the remaining
 ; lives) and ENDPAUSE (to adjust the speed and pitch of the in-game music).
 LIVES:
-  DEFB $00
-
-; Screen flash counter
-;
-; Initialised to zero by the routine at TITLESCREEN, but never used; the code
-; at SCRFLASH makes the screen flash in Manic Miner fashion if this address
-; holds a non-zero value.
-FLASH:
   DEFB $00
 
 ; Kempston joystick indicator
@@ -824,7 +762,14 @@ GAMETUNE:
   DEFB $51,$56,$60,$56,$51,$51,$60,$60,$40,$40,$40,$40,$40,$40,$40,$40
 
 ; unused
-  DEFS $12B
+  DEFS $1A9
+
+; The game has just loaded
+;
+; After the game has loaded, this is where it all starts.
+BEGIN:
+  DI                      ; Disable interrupts
+  LD SP,$5C00
 
 ; Display the title screen and play the theme tune
 ;
@@ -838,8 +783,6 @@ TITLESCREEN:
                           ; JOYSTICK
   LD (NOTEINDEX),A        ; Initialise the in-game music note index at
                           ; NOTEINDEX
-  LD (FLASH),A            ; Initialise the (unused) screen flash counter at
-                          ; FLASH
   LD (AIRBORNE),A         ; Initialise the airborne status indicator at
                           ; AIRBORNE
   LD (TICKS),A            ; Initialise the minute counter at TICKS
@@ -1164,25 +1107,6 @@ MAINLOOP_0:
   LD (HL),A               ; head down it; this has the effect of moving Willy
                           ; at twice his normal speed as he makes his way to
                           ; the toilet (using animation frames 2 and 0)
-SCRFLASH:
-  LD A,(FLASH)            ; Pick up the screen flash counter (unused and always
-                          ; 0) from FLASH
-  OR A                    ; Is it zero?
-  JR Z,MAINLOOP_1         ; Jump if so (this jump is always made)
-; The next section of code is never executed.
-  DEC A                   ; Decrement the screen flash counter at FLASH
-  LD (FLASH),A
-  RLCA                    ; Move bits 0-2 into bits 3-5 and clear all the other
-  RLCA                    ; bits
-  RLCA
-  AND $38
-  LD HL,$5C00             ; Set every attribute byte in the buffer at 23552 to
-  LD DE,$5C01             ; this value
-  LD BC,$01FF
-  LD (HL),A
-  LDIR
-; Normal service resumes here.
-MAINLOOP_1:
   LD HL,$5C00             ; Copy the contents of the attribute buffer at 23552
   LD DE,$5800             ; to the attribute file
   LD BC,$0200
@@ -2674,7 +2598,7 @@ DRAWTHINGS_8:
 DRAWTHINGS_9:
   LD IY,SBUFADDRS         ; Point IY at the first byte of the screen buffer
                           ; address lookup table at SBUFADDRS
-  LD (IX+$09),$00         ; Initialise the second byte in the following entity
+  LD (IX+$06),$00         ; Initialise the second byte in the following entity
                           ; definition to zero; this will count the segments of
                           ; rope to draw
   LD A,(IX+$02)           ; Initialise the fourth byte of the entity
@@ -2698,14 +2622,14 @@ DRAWTHINGS_10:
   AND (HL)                ; Is this segment of rope touching anything else
                           ; that's been drawn so far (e.g. Willy)?
   JR Z,DRAWTHINGS_13      ; Jump if not
-  LD A,(IX+$09)           ; Copy the segment counter into the rope status
+  LD A,(IX+$06)           ; Copy the segment counter into the rope status
   LD (ROPE),A             ; indicator at ROPE
-  SET 0,(IX+$0B)          ; Signal: Willy is on the rope
+  SET 6,(IX+$00)          ; Signal: Willy is on the rope
 DRAWTHINGS_11:
-  CP (IX+$09)             ; Does the rope status indicator at ROPE match the
+  CP (IX+$06)             ; Does the rope status indicator at ROPE match the
                           ; segment counter?
   JR NZ,DRAWTHINGS_13     ; Jump if not
-  BIT 0,(IX+$0B)          ; Is Willy on the rope (and clinging to this
+  BIT 6,(IX+$00)          ; Is Willy on the rope (and clinging to this
                           ; particular segment)?
   JR Z,DRAWTHINGS_13      ; Jump if not
   LD B,(IX+$03)           ; Copy the x-coordinate of the cell containing the
@@ -2741,7 +2665,7 @@ DRAWTHINGS_13:
   LD A,(IX+$05)           ; Draw a pixel of the rope to the screen buffer at
   OR (HL)                 ; 24576
   LD (HL),A
-  LD A,(IX+$09)           ; Point HL at the relevant entry in the second half
+  LD A,(IX+$06)           ; Point HL at the relevant entry in the second half
   ADD A,(IX+$01)          ; of the rope animation table at ROPEANIM
   LD L,A
   SET 7,L
@@ -2779,10 +2703,10 @@ DRAWTHINGS_17:
   DJNZ DRAWTHINGS_16      ; Jump back until the drawing byte has been rotated
                           ; as required
 DRAWTHINGS_18:
-  LD A,(IX+$09)           ; Pick up the segment counter
+  LD A,(IX+$06)           ; Pick up the segment counter
   CP (IX+$04)             ; Have we drawn every segment of the rope yet?
   JR Z,DRAWTHINGS_19      ; Jump if so
-  INC (IX+$09)            ; Increment the segment counter
+  INC (IX+$06)            ; Increment the segment counter
   JP DRAWTHINGS_10        ; Jump back to draw the next segment of rope
 ; Now that the entire rope has been drawn, deal with Willy's movement along it.
 DRAWTHINGS_19:
@@ -2792,10 +2716,10 @@ DRAWTHINGS_19:
   JR Z,DRAWTHINGS_20      ; Jump if not
   INC A                   ; Update the rope status indicator at ROPE
   LD (ROPE),A
-  RES 0,(IX+$0B)          ; Signal: Willy is not on the rope
+  RES 6,(IX+$00)          ; Signal: Willy is not on the rope
   JR DRAWTHINGS_22        ; Jump to consider the next entity definition
 DRAWTHINGS_20:
-  BIT 0,(IX+$0B)          ; Is Willy on the rope?
+  BIT 6,(IX+$00)          ; Is Willy on the rope?
   JR Z,DRAWTHINGS_22      ; If not, jump to consider the next entity definition
   LD A,(DMFLAGS)          ; Pick up Willy's direction and movement flags from
                           ; DMFLAGS
