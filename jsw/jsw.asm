@@ -229,189 +229,6 @@ ENTITYBUF:
   DEFS $08                ; Entity 8
   DEFB $FF                ; Terminator
 
-; Unused
-  DEFS $BF
-
-; Screen buffer address lookup table
-;
-; Used by the routines at GAMEOVER, DRAWTHINGS and DRAWWILLY. The value of the
-; Nth entry (0<=N<=127) in this lookup table is the screen buffer address for
-; the point with pixel coordinates (x,y)=(0,N), with the origin (0,0) at the
-; top-left corner.
-SBUFADDRS:
-  DEFW $6000              ; y=0
-  DEFW $6100              ; y=1
-  DEFW $6200              ; y=2
-  DEFW $6300              ; y=3
-  DEFW $6400              ; y=4
-  DEFW $6500              ; y=5
-  DEFW $6600              ; y=6
-  DEFW $6700              ; y=7
-  DEFW $6020              ; y=8
-  DEFW $6120              ; y=9
-  DEFW $6220              ; y=10
-  DEFW $6320              ; y=11
-  DEFW $6420              ; y=12
-  DEFW $6520              ; y=13
-  DEFW $6620              ; y=14
-  DEFW $6720              ; y=15
-  DEFW $6040              ; y=16
-  DEFW $6140              ; y=17
-  DEFW $6240              ; y=18
-  DEFW $6340              ; y=19
-  DEFW $6440              ; y=20
-  DEFW $6540              ; y=21
-  DEFW $6640              ; y=22
-  DEFW $6740              ; y=23
-  DEFW $6060              ; y=24
-  DEFW $6160              ; y=25
-  DEFW $6260              ; y=26
-  DEFW $6360              ; y=27
-  DEFW $6460              ; y=28
-  DEFW $6560              ; y=29
-  DEFW $6660              ; y=30
-  DEFW $6760              ; y=31
-  DEFW $6080              ; y=32
-  DEFW $6180              ; y=33
-  DEFW $6280              ; y=34
-  DEFW $6380              ; y=35
-  DEFW $6480              ; y=36
-  DEFW $6580              ; y=37
-  DEFW $6680              ; y=38
-  DEFW $6780              ; y=39
-  DEFW $60A0              ; y=40
-  DEFW $61A0              ; y=41
-  DEFW $62A0              ; y=42
-  DEFW $63A0              ; y=43
-  DEFW $64A0              ; y=44
-  DEFW $65A0              ; y=45
-  DEFW $66A0              ; y=46
-  DEFW $67A0              ; y=47
-  DEFW $60C0              ; y=48
-  DEFW $61C0              ; y=49
-  DEFW $62C0              ; y=50
-  DEFW $63C0              ; y=51
-  DEFW $64C0              ; y=52
-  DEFW $65C0              ; y=53
-  DEFW $66C0              ; y=54
-  DEFW $67C0              ; y=55
-  DEFW $60E0              ; y=56
-  DEFW $61E0              ; y=57
-  DEFW $62E0              ; y=58
-  DEFW $63E0              ; y=59
-  DEFW $64E0              ; y=60
-  DEFW $65E0              ; y=61
-  DEFW $66E0              ; y=62
-  DEFW $67E0              ; y=63
-  DEFW $6800              ; y=64
-  DEFW $6900              ; y=65
-  DEFW $6A00              ; y=66
-  DEFW $6B00              ; y=67
-  DEFW $6C00              ; y=68
-  DEFW $6D00              ; y=69
-  DEFW $6E00              ; y=70
-  DEFW $6F00              ; y=71
-  DEFW $6820              ; y=72
-  DEFW $6920              ; y=73
-  DEFW $6A20              ; y=74
-  DEFW $6B20              ; y=75
-  DEFW $6C20              ; y=76
-  DEFW $6D20              ; y=77
-  DEFW $6E20              ; y=78
-  DEFW $6F20              ; y=79
-  DEFW $6840              ; y=80
-  DEFW $6940              ; y=81
-  DEFW $6A40              ; y=82
-  DEFW $6B40              ; y=83
-  DEFW $6C40              ; y=84
-  DEFW $6D40              ; y=85
-  DEFW $6E40              ; y=86
-  DEFW $6F40              ; y=87
-  DEFW $6860              ; y=88
-  DEFW $6960              ; y=89
-  DEFW $6A60              ; y=90
-  DEFW $6B60              ; y=91
-  DEFW $6C60              ; y=92
-  DEFW $6D60              ; y=93
-  DEFW $6E60              ; y=94
-  DEFW $6F60              ; y=95
-  DEFW $6880              ; y=96
-  DEFW $6980              ; y=97
-  DEFW $6A80              ; y=98
-  DEFW $6B80              ; y=99
-  DEFW $6C80              ; y=100
-  DEFW $6D80              ; y=101
-  DEFW $6E80              ; y=102
-  DEFW $6F80              ; y=103
-  DEFW $68A0              ; y=104
-  DEFW $69A0              ; y=105
-  DEFW $6AA0              ; y=106
-  DEFW $6BA0              ; y=107
-  DEFW $6CA0              ; y=108
-  DEFW $6DA0              ; y=109
-  DEFW $6EA0              ; y=110
-  DEFW $6FA0              ; y=111
-  DEFW $68C0              ; y=112
-  DEFW $69C0              ; y=113
-  DEFW $6AC0              ; y=114
-  DEFW $6BC0              ; y=115
-  DEFW $6CC0              ; y=116
-  DEFW $6DC0              ; y=117
-  DEFW $6EC0              ; y=118
-  DEFW $6FC0              ; y=119
-  DEFW $68E0              ; y=120
-  DEFW $69E0              ; y=121
-  DEFW $6AE0              ; y=122
-  DEFW $6BE0              ; y=123
-  DEFW $6CE0              ; y=124
-  DEFW $6DE0              ; y=125
-  DEFW $6EE0              ; y=126
-  DEFW $6FE0              ; y=127
-
-; Rope animation table
-;
-; Used by the routine at DRAWTHINGS. The first half of this table controls the
-; x-coordinates at which the segments of rope are drawn, and the second half
-; controls the y-coordinates. For a given rope animation frame F (0<=F<=54),
-; the 32 entries from F to F+31 inclusive (one for each segment of rope) in
-; each half of the table are used; thus the batch of entries used 'slides' up
-; and down the table as F increases and decreases.
-ROPEANIM:
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; These values determine how much to
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; rotate the rope drawing byte (which in
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; turn determines the x-coordinate at
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; which each segment of rope is drawn)
-  DEFB $01,$01,$01,$01,$01,$01,$01,$01
-  DEFB $01,$01,$01,$01,$02,$02,$02,$02
-  DEFB $02,$02,$02,$02,$02,$02,$02,$02
-  DEFB $02,$02,$02,$02,$02,$02,$02,$02
-  DEFB $02,$02,$01,$02,$02,$01,$01,$02
-  DEFB $01,$01,$02,$02,$03,$02,$03,$02
-  DEFB $03,$03,$03,$03,$03,$03
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Unused
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; These values determine the
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; y-coordinate of each segment of rope
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; relative to the one above it
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06
-  DEFB $06,$06,$06,$06,$06,$06,$06,$06
-  DEFB $04,$06,$06,$04,$06,$04,$06,$04
-  DEFB $06,$04,$04,$04,$06,$04,$04,$04
-  DEFB $04,$04,$04,$04,$04,$04,$04,$04
-  DEFB $04,$04,$04,$04,$04,$04,$04,$04
-  DEFB $04,$04,$04,$04,$04,$04
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Unused
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00,$00,$00,$00,$00,$00,$00
-  DEFB $00,$00
-
 ; Left-right movement table
 ;
 ; Used by the routine at MOVEWILLY2. The entries in this table are used to map
@@ -468,6 +285,18 @@ TRIANGLE2:
 TRIANGLE3:
   DEFB $FC,$F0,$C0,$00,$00,$00,$00,$00
 
+; Title screen tune data (Moonlight Sonata)
+;
+; Used by the routine at PLAYTUNE.
+THEMETUNE:
+  DEFB $51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51
+  DEFB $3C,$33,$51,$3C,$33,$51,$3C,$33,$4C,$3C,$33,$4C,$3C,$33,$4C,$39
+  DEFB $2D,$4C,$39,$2D,$51,$40,$2D,$51,$3C,$33,$51,$3C,$36,$5B,$40,$36
+  DEFB $66,$51,$3C,$51,$3C,$33,$51,$3C,$33,$28,$3C,$28,$28,$36,$2D,$51
+  DEFB $36,$2D,$51,$36,$2D,$28,$36,$28,$28,$3C,$33,$51,$3C,$33,$26,$3C
+  DEFB $2D,$4C,$3C,$2D,$28,$40,$33,$51,$40,$33,$2D,$40,$36,$20,$40,$36
+  DEFB $3D,$79,$3D,$FF
+
 ; '+++++ Press ENTER to Start +++++...'
 ;
 ; Used by the routine at TITLESCREEN.
@@ -485,18 +314,6 @@ MSG_INTRO:
 ; Used by the routine at STARTGAME.
 MSG_STATUS:
   DEFM "Items collected 000 Time 00:00 m"
-
-; 'Game'
-;
-; Used by the routine at GAMEOVER.
-MSG_GAME:
-  DEFM "Game"
-
-; 'Over'
-;
-; Used by the routine at GAMEOVER.
-MSG_OVER:
-  DEFM "Over"
 
 ; Number of items collected
 ;
@@ -517,6 +334,18 @@ MSG_CURTIME:
 ; Copied by the routine at STARTGAME to MSG_CURTIME.
 MSG_7AM:
   DEFM " 7:00a"
+
+; 'Game'
+;
+; Used by the routine at GAMEOVER.
+MSG_GAME:
+  DEFM "Game"
+
+; 'Over'
+;
+; Used by the routine at GAMEOVER.
+MSG_OVER:
+  DEFM "Over"
 
 ; Current room number
 ;
@@ -740,18 +569,6 @@ WRITETYPER:
   DEFB %00011011,%00011111 ; E
   DEFB %00010111,%00011111 ; R
 
-; Title screen tune data (Moonlight Sonata)
-;
-; Used by the routine at PLAYTUNE.
-THEMETUNE:
-  DEFB $51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51,$3C,$33,$51
-  DEFB $3C,$33,$51,$3C,$33,$51,$3C,$33,$4C,$3C,$33,$4C,$3C,$33,$4C,$39
-  DEFB $2D,$4C,$39,$2D,$51,$40,$2D,$51,$3C,$33,$51,$3C,$36,$5B,$40,$36
-  DEFB $66,$51,$3C,$51,$3C,$33,$51,$3C,$33,$28,$3C,$28,$28,$36,$2D,$51
-  DEFB $36,$2D,$51,$36,$2D,$28,$36,$28,$28,$3C,$33,$51,$3C,$33,$26,$3C
-  DEFB $2D,$4C,$3C,$2D,$28,$40,$33,$51,$40,$33,$2D,$40,$36,$20,$40,$36
-  DEFB $3D,$79,$3D,$FF
-
 ; In-game tune data (If I Were a Rich Man)
 ;
 ; Used by the routine at ENDPAUSE.
@@ -760,9 +577,6 @@ GAMETUNE:
   DEFB $66,$60,$56,$4C,$48,$4C,$48,$4C,$56,$56,$56,$56,$56,$56,$56,$56
   DEFB $40,$40,$40,$40,$44,$44,$4C,$4C,$56,$60,$66,$60,$56,$56,$66,$66
   DEFB $51,$56,$60,$56,$51,$51,$60,$60,$40,$40,$40,$40,$40,$40,$40,$40
-
-; unused
-  DEFS $1A9
 
 ; The game has just loaded
 ;
@@ -3474,8 +3288,188 @@ INTROSOUND_2:
   JR NZ,INTROSOUND_0      ; Jump back if not
   RET
 
-; Unused
-  DEFS $122
+; unused
+  DEFS $68A
+
+; Screen buffer address lookup table
+;
+; Used by the routines at GAMEOVER, DRAWTHINGS and DRAWWILLY. The value of the
+; Nth entry (0<=N<=127) in this lookup table is the screen buffer address for
+; the point with pixel coordinates (x,y)=(0,N), with the origin (0,0) at the
+; top-left corner.
+SBUFADDRS:
+  DEFW $6000              ; y=0
+  DEFW $6100              ; y=1
+  DEFW $6200              ; y=2
+  DEFW $6300              ; y=3
+  DEFW $6400              ; y=4
+  DEFW $6500              ; y=5
+  DEFW $6600              ; y=6
+  DEFW $6700              ; y=7
+  DEFW $6020              ; y=8
+  DEFW $6120              ; y=9
+  DEFW $6220              ; y=10
+  DEFW $6320              ; y=11
+  DEFW $6420              ; y=12
+  DEFW $6520              ; y=13
+  DEFW $6620              ; y=14
+  DEFW $6720              ; y=15
+  DEFW $6040              ; y=16
+  DEFW $6140              ; y=17
+  DEFW $6240              ; y=18
+  DEFW $6340              ; y=19
+  DEFW $6440              ; y=20
+  DEFW $6540              ; y=21
+  DEFW $6640              ; y=22
+  DEFW $6740              ; y=23
+  DEFW $6060              ; y=24
+  DEFW $6160              ; y=25
+  DEFW $6260              ; y=26
+  DEFW $6360              ; y=27
+  DEFW $6460              ; y=28
+  DEFW $6560              ; y=29
+  DEFW $6660              ; y=30
+  DEFW $6760              ; y=31
+  DEFW $6080              ; y=32
+  DEFW $6180              ; y=33
+  DEFW $6280              ; y=34
+  DEFW $6380              ; y=35
+  DEFW $6480              ; y=36
+  DEFW $6580              ; y=37
+  DEFW $6680              ; y=38
+  DEFW $6780              ; y=39
+  DEFW $60A0              ; y=40
+  DEFW $61A0              ; y=41
+  DEFW $62A0              ; y=42
+  DEFW $63A0              ; y=43
+  DEFW $64A0              ; y=44
+  DEFW $65A0              ; y=45
+  DEFW $66A0              ; y=46
+  DEFW $67A0              ; y=47
+  DEFW $60C0              ; y=48
+  DEFW $61C0              ; y=49
+  DEFW $62C0              ; y=50
+  DEFW $63C0              ; y=51
+  DEFW $64C0              ; y=52
+  DEFW $65C0              ; y=53
+  DEFW $66C0              ; y=54
+  DEFW $67C0              ; y=55
+  DEFW $60E0              ; y=56
+  DEFW $61E0              ; y=57
+  DEFW $62E0              ; y=58
+  DEFW $63E0              ; y=59
+  DEFW $64E0              ; y=60
+  DEFW $65E0              ; y=61
+  DEFW $66E0              ; y=62
+  DEFW $67E0              ; y=63
+  DEFW $6800              ; y=64
+  DEFW $6900              ; y=65
+  DEFW $6A00              ; y=66
+  DEFW $6B00              ; y=67
+  DEFW $6C00              ; y=68
+  DEFW $6D00              ; y=69
+  DEFW $6E00              ; y=70
+  DEFW $6F00              ; y=71
+  DEFW $6820              ; y=72
+  DEFW $6920              ; y=73
+  DEFW $6A20              ; y=74
+  DEFW $6B20              ; y=75
+  DEFW $6C20              ; y=76
+  DEFW $6D20              ; y=77
+  DEFW $6E20              ; y=78
+  DEFW $6F20              ; y=79
+  DEFW $6840              ; y=80
+  DEFW $6940              ; y=81
+  DEFW $6A40              ; y=82
+  DEFW $6B40              ; y=83
+  DEFW $6C40              ; y=84
+  DEFW $6D40              ; y=85
+  DEFW $6E40              ; y=86
+  DEFW $6F40              ; y=87
+  DEFW $6860              ; y=88
+  DEFW $6960              ; y=89
+  DEFW $6A60              ; y=90
+  DEFW $6B60              ; y=91
+  DEFW $6C60              ; y=92
+  DEFW $6D60              ; y=93
+  DEFW $6E60              ; y=94
+  DEFW $6F60              ; y=95
+  DEFW $6880              ; y=96
+  DEFW $6980              ; y=97
+  DEFW $6A80              ; y=98
+  DEFW $6B80              ; y=99
+  DEFW $6C80              ; y=100
+  DEFW $6D80              ; y=101
+  DEFW $6E80              ; y=102
+  DEFW $6F80              ; y=103
+  DEFW $68A0              ; y=104
+  DEFW $69A0              ; y=105
+  DEFW $6AA0              ; y=106
+  DEFW $6BA0              ; y=107
+  DEFW $6CA0              ; y=108
+  DEFW $6DA0              ; y=109
+  DEFW $6EA0              ; y=110
+  DEFW $6FA0              ; y=111
+  DEFW $68C0              ; y=112
+  DEFW $69C0              ; y=113
+  DEFW $6AC0              ; y=114
+  DEFW $6BC0              ; y=115
+  DEFW $6CC0              ; y=116
+  DEFW $6DC0              ; y=117
+  DEFW $6EC0              ; y=118
+  DEFW $6FC0              ; y=119
+  DEFW $68E0              ; y=120
+  DEFW $69E0              ; y=121
+  DEFW $6AE0              ; y=122
+  DEFW $6BE0              ; y=123
+  DEFW $6CE0              ; y=124
+  DEFW $6DE0              ; y=125
+  DEFW $6EE0              ; y=126
+  DEFW $6FE0              ; y=127
+
+; Rope animation table
+;
+; Used by the routine at DRAWTHINGS. The first half of this table controls the
+; x-coordinates at which the segments of rope are drawn, and the second half
+; controls the y-coordinates. For a given rope animation frame F (0<=F<=54),
+; the 32 entries from F to F+31 inclusive (one for each segment of rope) in
+; each half of the table are used; thus the batch of entries used 'slides' up
+; and down the table as F increases and decreases.
+ROPEANIM:
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; These values determine how much to
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; rotate the rope drawing byte (which in
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; turn determines the x-coordinate at
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; which each segment of rope is drawn)
+  DEFB $01,$01,$01,$01,$01,$01,$01,$01
+  DEFB $01,$01,$01,$01,$02,$02,$02,$02
+  DEFB $02,$02,$02,$02,$02,$02,$02,$02
+  DEFB $02,$02,$02,$02,$02,$02,$02,$02
+  DEFB $02,$02,$01,$02,$02,$01,$01,$02
+  DEFB $01,$01,$02,$02,$03,$02,$03,$02
+  DEFB $03,$03,$03,$03,$03,$03
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Unused
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; These values determine the
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; y-coordinate of each segment of rope
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06 ; relative to the one above it
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06
+  DEFB $06,$06,$06,$06,$06,$06,$06,$06
+  DEFB $04,$06,$06,$04,$06,$04,$06,$04
+  DEFB $06,$04,$04,$04,$06,$04,$04,$04
+  DEFB $04,$04,$04,$04,$04,$04,$04,$04
+  DEFB $04,$04,$04,$04,$04,$04,$04,$04
+  DEFB $04,$04,$04,$04,$04,$04
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00 ; Unused
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00,$00,$00,$00,$00,$00,$00
+  DEFB $00,$00
 
 ; Attributes for the top two-thirds of the title screen
 ;
@@ -3536,7 +3530,7 @@ ATTRSLOWER:
   DEFB $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 
 ; not used
-  DEFS $140
+  DEFS $40
 
 ; Foot/barrel graphic data
 ;
@@ -3590,11 +3584,6 @@ WILLYR2:
   DEFB $01,$D8,$01,$D8,$01,$D8,$01,$B8,$00,$F0,$00,$60,$00,$60,$00,$E0
   DEFB $00,$3C,$00,$3C,$00,$7E,$00,$2C,$00,$7C,$00,$3C,$00,$18,$00,$3C
   DEFB $00,$7E,$00,$7E,$00,$EF,$00,$DF,$00,$3C,$00,$6E,$00,$76,$00,$EE
-
-; Codes
-;
-; not used
-  DEFS $0200
 
 ; Entity definitions
 ;
@@ -3912,7 +3901,7 @@ ENTITY19:
   DEFB $20                ; Initial pixel y-coordinate: 16
   DEFB $02                ; Initial pixel y-coordinate increment: 1 (moving
                           ; down)
-  DEFB $9C                ; Page containing the sprite graphic data: 9C
+  DEFB BARREL/$100        ; Page containing the sprite graphic data
   DEFB $20                ; Minimum pixel y-coordinate: 16
   DEFB $60                ; Maximum pixel y-coordinate: 48
 ; The following entity definition (0x14) is used in The Bridge and West  Wing.
@@ -4703,7 +4692,7 @@ ENTITY70:
   DEFB $40                ; Initial pixel y-coordinate: 32
   DEFB $FC                ; Initial pixel y-coordinate increment: -2 (moving
                           ; up)
-  DEFB $9C                ; Page containing the sprite graphic data: 9C
+  DEFB MARIA0/$100        ; Page containing the sprite graphic data
   DEFB $00                ; Minimum pixel y-coordinate: 0
   DEFB $A0                ; Maximum pixel y-coordinate: 80
 ; The following entity definition (0x47) is used in The Nightmare Room.
@@ -4719,7 +4708,7 @@ ENTITY71:
   DEFB $20                ; Initial pixel y-coordinate: 16
   DEFB $02                ; Initial pixel y-coordinate increment: 1 (moving
                           ; down)
-  DEFB $9C                ; Page containing the sprite graphic data: 9C
+  DEFB MARIA0/$100        ; Page containing the sprite graphic data
   DEFB $00                ; Minimum pixel y-coordinate: 0
   DEFB $D0                ; Maximum pixel y-coordinate: 104
 ; The following entity definition (0x48) is used in The Nightmare Room.
@@ -4734,7 +4723,7 @@ ENTITY72:
   DEFB $90                ; Initial pixel y-coordinate: 72
   DEFB $06                ; Initial pixel y-coordinate increment: 3 (moving
                           ; down)
-  DEFB $9C                ; Page containing the sprite graphic data: 9C
+  DEFB MARIA0/$100        ; Page containing the sprite graphic data
   DEFB $00                ; Minimum pixel y-coordinate: 0
   DEFB $C0                ; Maximum pixel y-coordinate: 96
 ; The following entity definition (0x49) is used in The Nightmare Room.
@@ -4750,7 +4739,7 @@ ENTITY73:
   DEFB $80                ; Initial pixel y-coordinate: 64
   DEFB $F8                ; Initial pixel y-coordinate increment: -4 (moving
                           ; up)
-  DEFB $9C                ; Page containing the sprite graphic data: 9C
+  DEFB MARIA0/$100        ; Page containing the sprite graphic data
   DEFB $10                ; Minimum pixel y-coordinate: 8
   DEFB $D0                ; Maximum pixel y-coordinate: 104
 ; The following entity definition (0x4A) is used in The Forgotten Abbey.
