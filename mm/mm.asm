@@ -1292,7 +1292,7 @@ FEET:
 LOOPFT:
   LD A,(EUGHGT)           ; Pick up the distance variable from EUGHGT
   LD C,A                  ; Point BC at the corresponding entry in the screen
-  LD B,$83                ; buffer address lookup table at SBUFADDRS
+  LD B,SBUFADDRS/$100     ; buffer address lookup table at SBUFADDRS
   LD A,(BC)               ; Point HL at the corresponding location in the
   OR $0F                  ; display file
   LD L,A
@@ -2183,7 +2183,7 @@ EUGENE_2:
   AND $7F                 ; Point DE at the entry in the screen buffer address
   RLCA                    ; lookup table at SBUFADDRS that corresponds to
   LD E,A                  ; Eugene's y-coordinate
-  LD D,$83
+  LD D,SBUFADDRS/$100
   LD A,(DE)               ; Point HL at the address of Eugene's location in the
   OR $0F                  ; screen buffer at 24576
   LD L,A
@@ -2274,7 +2274,7 @@ SKYLABS_1:
 SKYLABS_2:
   LD E,(IY+$02)           ; Pick up the Skylab's pixel y-coordinate in E
   RLC E                   ; Point DE at the entry in the screen buffer address
-  LD D,$83                ; lookup table at SBUFADDRS that corresponds to the
+  LD D,SBUFADDRS/$100     ; lookup table at SBUFADDRS that corresponds to the
                           ; Skylab's pixel y-coordinate
   LD A,(DE)               ; Point HL at the address of the Skylab's location in
   ADD A,(IY+$03)          ; the screen buffer at 24576
@@ -2344,7 +2344,7 @@ VGUARDIANS_2:
   AND $7F                 ; Point DE at the entry in the screen buffer address
   RLCA                    ; lookup table at SBUFADDRS that corresponds to the
   LD E,A                  ; guardian's pixel y-coordinate
-  LD D,$83
+  LD D,SBUFADDRS/$100
   LD A,(DE)               ; Point HL at the address of the guardian's location
   OR (IY+$03)             ; in the screen buffer at 24576
   LD L,A
@@ -2836,7 +2836,7 @@ KONGBEAST_6:
                           ; A
   RLCA                    ; Point DE at the entry in the screen buffer address
   LD E,A                  ; lookup table at SBUFADDRS that corresponds to the
-  LD D,$83                ; Kong Beast's pixel y-coordinate
+  LD D,SBUFADDRS/$100     ; Kong Beast's pixel y-coordinate
   LD A,(DE)               ; Point HL at the address of the Kong Beast's
   OR $0F                  ; location in the screen buffer at 24576
   LD L,A
@@ -2989,7 +2989,7 @@ WILLYATTR_0:
 ; Used by the routine at WILLYATTRS.
 DRAWWILLY:
   LD A,(PIXEL_Y)          ; Pick up Willy's pixel y-coordinate from PIXEL_Y
-  LD IXh,$83              ; Point IX at the entry in the screen buffer address
+  LD IXh,SBUFADDRS/$100   ; Point IX at the entry in the screen buffer address
   LD IXl,A                ; lookup table at SBUFADDRS that corresponds to
                           ; Willy's y-coordinate
   LD A,(DMFLAGS)          ; Pick up Willy's direction and movement flags from
