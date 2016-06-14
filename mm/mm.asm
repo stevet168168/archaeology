@@ -455,13 +455,6 @@ SBUFADDRS:
   DEFW $6EE0              ; y=126
   DEFW $6FE0              ; y=127
 
-; The game has just loaded
-BEGIN:
-  DI                      ; Disable interrupts
-  LD SP,$9CFE             ; Place the stack somewhere safe (near the end of the
-                          ; source code remnants at SOURCE)
-  JP START                ; Display the title screen and play the theme tune
-
 ; Current cavern number
 ;
 ; Initialised by the routine at START, used by the routines at STARTGAME, LOOP,
@@ -742,6 +735,11 @@ GAMETUNE:
   DEFB $80,$72,$66,$60,$56,$66,$56,$56,$51,$60,$51,$51,$56,$66,$56,$56
   DEFB $80,$72,$66,$60,$56,$66,$56,$40,$56,$66,$80,$66,$56,$56,$56,$56
 
+; The game has just loaded
+BEGIN:
+  DI                      ; Disable interrupts
+  LD SP,$5C00             ; Place the stack somewhere safe
+
 ; Display the title screen and play the theme tune
 ;
 ; Used by the routines at BEGIN, LOOP and ENDGAM.
@@ -783,7 +781,6 @@ START:
   LDIR
 ; Now check whether there is a joystick connected.
   LD BC,$001F             ; B=0, C=31 (joystick port)
-  DI                      ; Disable interrupts (which are already disabled)
   XOR A                   ; A=0
 START_0:
   IN E,(C)                ; Combine 256 readings of the joystick port in A; if
@@ -845,7 +842,7 @@ START_3:
 ; Used by the routine at START.
 STARTGAME:
   LD HL,SCORE             ; Initialise the score at SCORE
-  LD DE,$8426
+  LD DE,SCORE+$01
   LD BC,$0009
   LD (HL),$30
   LDIR
@@ -856,7 +853,7 @@ NEWSHT:
   LD A,(SHEET)            ; Pick up the number of the current cavern from SHEET
   SLA A                   ; Point HL at the first byte of the cavern definition
   SLA A
-  ADD A,$B0
+  ADD A,CAVERN0/$100
   LD H,A
   LD L,$00
   LD DE,$5E00             ; Copy the cavern's attribute bytes into the buffer
@@ -1447,7 +1444,7 @@ DRAWSHEET:
   LD IX,$5E00             ; Point IX at the first byte of the attribute buffer
                           ; at 24064
   LD A,$70                ; Set the operand of the 'LD D,n' instruction at
-  LD ($8A9C),A            ; SBMSB (below) to $70
+  LD (SBMSB+$01),A        ; SBMSB (below) to $70
   CALL DRAWSHEET_0        ; Draw the tiles for the top half of the cavern to
                           ; the screen buffer at 28672
   LD IX,$5F00             ; Point IX at the 256th byte of the attribute buffer
@@ -1455,7 +1452,7 @@ DRAWSHEET:
                           ; of the cavern; this instruction is redundant, since
                           ; IX already holds 5F00
   LD A,$78                ; Set the operand of the 'LD D,n' instruction at
-  LD ($8A9C),A            ; SBMSB (below) to $78
+  LD (SBMSB+$01),A        ; SBMSB (below) to $78
 DRAWSHEET_0:
   LD C,$00                ; C will count 256 tiles
 ; The following loop draws 256 tiles (for either the top half or the bottom
@@ -2193,7 +2190,7 @@ EUGENE_2:
   INC DE
   LD A,(DE)
   LD H,A
-  LD DE,$80E0             ; Draw Eugene to the screen buffer at 24576
+  LD DE,VGUARDS+$03       ; Draw Eugene to the screen buffer at 24576
   LD C,$01
   CALL DRWFIX
   JP NZ,KILLWILLY_0       ; Kill Willy if Eugene collided with him
@@ -2406,7 +2403,7 @@ DRAWITEMS_0:
   CP $07                  ; touching the item)?
   JR NZ,DRAWITEMS_1       ; Jump if not
 ; Willy is touching this item, so add it to his collection.
-  LD HL,$842C             ; Add 100 to the score
+  LD HL,SCORBUF+$03       ; Add 100 to the score
   CALL INCSCORE_0
   LD (IY+$00),$00         ; Set the item's attribute byte to 0 so that it will
                           ; be skipped the next time
@@ -2460,7 +2457,7 @@ CHKPORTAL:
                           ; in the attribute buffer at 23552 from LOCATION
   CP L                    ; Does it match that of the portal?
   JR NZ,CHKPORTAL_0       ; Jump if not
-  LD A,($806D)            ; Pick up the MSB of the address of Willy's location
+  LD A,(LOCATION+$01)     ; Pick up the MSB of the address of Willy's location
                           ; in the attribute buffer at 23552 from 806D
   CP H                    ; Does it match that of the portal?
   JR NZ,CHKPORTAL_0       ; Jump if not
@@ -2646,7 +2643,7 @@ NXSHEET_6:
   CALL DECAIR             ; Decrease the air remaining in the current cavern
   JP Z,NEWSHT             ; Move to the next cavern if the air supply is now
                           ; gone
-  LD HL,$842E             ; Add 1 to the score
+  LD HL,SCORBUF+$05       ; Add 1 to the score
   CALL INCSCORE_0
   LD IX,SCORBUF           ; Print the new score at (19,26)
   LD C,$06
@@ -2776,7 +2773,7 @@ KONGBEAST_0:
   LD ($5F91),A            ; buffer at 24064 to match the background tile (the
                           ; wall there is now gone)
   LD A,$72                ; Update the seventh byte of the guardian definition
-  LD ($80CB),A            ; at HGUARD2 so that the guardian moves through the
+  LD (HGUARD2+$06),A      ; at HGUARD2 so that the guardian moves through the
                           ; opening in the wall
   JR KONGBEAST_2
 KONGBEAST_1:
@@ -2853,7 +2850,7 @@ KONGBEAST_6:
   LD E,A
   LD C,$00                ; Draw the Kong Beast to the screen buffer at 24576
   CALL DRWFIX
-  LD HL,$842C             ; Add 100 to the score
+  LD HL,SCORBUF+$03       ; Add 100 to the score
   CALL INCSCORE_0
   LD A,(EUGHGT)           ; Pick up the Kong Beast's pixel y-coordinate from
                           ; EUGHGT
@@ -2903,12 +2900,12 @@ CHKSWITCH:
   AND $FE                 ; address of the switch's location?
   CP L
   RET NZ                  ; Return (with the zero flag reset) if not
-  LD A,($806D)            ; Pick up the MSB of the address of Willy's location
+  LD A,(LOCATION+$01)     ; Pick up the MSB of the address of Willy's location
                           ; in the attribute buffer at 23552 from 806D
   CP H                    ; Does it match the MSB of the address of the
                           ; switch's location?
   RET NZ                  ; Return (with the zero flag reset) if not
-  LD A,($8065)            ; Pick up the sixth byte of the graphic data for the
+  LD A,(EXTRA+$06)        ; Pick up the sixth byte of the graphic data for the
                           ; switch tile from 8065
   LD H,$75                ; Point HL at the sixth row of pixels of the switch
                           ; tile in the screen buffer at 28672
@@ -3171,590 +3168,9 @@ CHECKENTER_0:
   CP $01                  ; Reset the zero flag if ENTER is being pressed
   RET
 
-; Source code remnants
-;
-; The source code here corresponds to the code at SEE37708.
-SOURCE:
-  DEFM $09,"DEC",$09,"E"  ; DEC E
-  DEFW $0F78              ; 3960 JR NZ,NOFLP6
-  DEFB $0D
-  DEFM $09,"JR",$09,"NZ,NOFLP6"
-  DEFW $0F82              ; 3970 LD E,(HL)
-  DEFB $0A
-  DEFM $09,"LD",$09,"E,(HL)"
-  DEFW $0F8C              ; 3980 XOR 24
-  DEFB $07
-  DEFM $09,"XOR",$09,"24"
-  DEFW $0F96              ; 3990 NOFLP6 DJNZ TM51
-  DEFB $10
-  DEFM "NOFLP6",$09,"DJNZ",$09,"TM51"
-  DEFW $0FA0              ; 4000 DEC C
-  DEFB $06
-  DEFM $09,"DEC",$09,"C"
-  DEFW $0FAA              ; 4010 JR NZ,TM51
-  DEFB $0B
-  DEFM $09,"JR",$09,"NZ,TM51"
-  DEFW $0FB4              ; 4020 NONOTE4 LD A,(DEMO)
-  DEFB $13
-  DEFM "NONOTE4",$09,"LD",$09,"A,(DEMO)"
-  DEFW $0FBE              ; 4030 OR A
-  DEFB $05
-  DEFM $09,"OR",$09,"A"
-  DEFW $0FC8              ; 4040 JR Z,NODEM1
-  DEFB $0C
-  DEFM $09,"JR",$09,"Z,NODEM1"
-  DEFW $0FD2              ; 4050 DEC A
-  DEFB $06
-  DEFM $09,"DEC",$09,"A"
-  DEFW $0FDC              ; 4060 JP Z,MANDEAD
-  DEFB $0D
-  DEFM $09,"JP",$09,"Z,MANDEAD"
-  DEFW $0FE6              ; 4070 LD (DEMO),A
-  DEFB $0C
-  DEFM $09,"LD",$09,"(DEMO),A"
-  DEFW $0FF0              ; 4080 LD BC,0FEH
-  DEFB $0B
-  DEFM $09,"LD",$09,"BC,0FEH"
-  DEFW $0FFA              ; 4090 IN A,(C)
-  DEFB $09
-  DEFM $09,"IN",$09,"A,(C)"
-  DEFW $1004              ; 4100 AND 31
-  DEFB $07
-  DEFM $09,"AND",$09,"31"
-  DEFW $100E              ; 4110 CP 31
-  DEFB $06
-  DEFM $09,"CP",$09,"31"
-  DEFW $1018              ; 4120 JP NZ,START
-  DEFB $0C
-  DEFM $09,"JP",$09,"NZ,START"
-  DEFW $1022              ; 4130 LD A,(KEMP)
-  DEFB $0C
-  DEFM $09,"LD",$09,"A,(KEMP)"
-  DEFW $102C              ; 4140 OR A
-  DEFB $05
-  DEFM $09,"OR",$09,"A"
-  DEFW $1036              ; 4150 JR Z,NODEM1
-  DEFB $0C
-  DEFM $09,"JR",$09,"Z,NODEM1"
-  DEFW $1040              ; 4160 IN A,(31)
-  DEFB $0A
-  DEFM $09,"IN",$09,"A,(31)"
-  DEFW $104A              ; 4170 OR A
-  DEFB $05
-  DEFM $09,"OR",$09,"A"
-  DEFW $1054              ; 4180 JP NZ,START
-  DEFB $0C
-  DEFM $09,"JP",$09,"NZ,START"
-  DEFW $105E              ; 4190 NODEM1 LD BC,0EFFEH
-  DEFB $13
-  DEFM "NODEM1",$09,"LD",$09,"BC,0EFFEH"
-  DEFW $1068              ; 4200 IN A,(C)
-  DEFB $09
-  DEFM $09,"IN",$09,"A,(C)"
-  DEFW $1072              ; 4210 BIT 4,A
-  DEFB $08
-  DEFM $09,"BIT",$09,"4,A"
-  DEFW $107C              ; 4220 JP NZ,CKCHEAT
-  DEFB $0E
-  DEFM $09,"JP",$09,"NZ,CKCHEAT"
-  DEFW $1086              ; 4230 LD A,(CHEAT)
-  DEFB $0D
-  DEFM $09,"LD",$09,"A,(CHEAT)"
-  DEFW $1090              ; 4240 CP 7
-  DEFB $05
-  DEFM $09,"CP",$09,"7"
-  DEFW $109A              ; 4250 JP NZ,CKCHEAT
-  DEFB $0E
-  DEFM $09,"JP",$09,"NZ,CKCHEAT"
-  DEFW $10A4              ; 4260 LD B,0F7H
-  DEFB $0A
-  DEFM $09,"LD",$09,"B,0F7H"
-  DEFW $10AE              ; 4270 IN A,(C)
-  DEFB $09
-  DEFM $09,"IN",$09,"A,(C)"
-  DEFW $10B8              ; 4280 CPL
-  DEFB $04
-  DEFM $09,"CPL"
-  DEFW $10C2              ; 4290 AND 31
-  DEFB $07
-  DEFM $09,"AND",$09,"31"
-  DEFW $10CC              ; 4300 CP 20
-  DEFB $06
-  DEFM $09,"CP",$09,"20"
-  DEFW $10D6              ; 4310 JP NC,CKCHEAT
-  DEFB $0E
-  DEFM $09,"JP",$09,"NC,CKCHEAT"
-  DEFW $10E0              ; 4320 LD (SHEET),A
-  DEFB $0D
-  DEFM $09,"LD",$09,"(SHEET),A"
-  DEFW $10EA              ; 4330 JP NEWSHT
-  DEFB $0A
-  DEFM $09,"JP",$09,"NEWSHT"
-  DEFW $10F4              ; 4340 CKCHEAT LD A,(CHEAT)
-  DEFB $14
-  DEFM "CKCHEAT",$09,"LD",$09,"A,(CHEAT)"
-  DEFW $10FE              ; 4350 CP 7
-  DEFB $05
-  DEFM $09,"CP",$09,"7"
-  DEFW $1108              ; 4360 JP Z,LOOP
-  DEFB $0A
-  DEFM $09,"JP",$09,"Z,LOOP"
-  DEFW $1112              ; 4370 RLCA
-  DEFB $05
-  DEFM $09,"RLCA"
-  DEFW $111C              ; 4380 LD E,A
-  DEFB $07
-  DEFM $09,"LD",$09,"E,A"
-  DEFW $1126              ; 4390 LD D,0
-  DEFB $07
-  DEFM $09,"LD",$09,"D,0"
-  DEFW $1130              ; 4400 LD IX,CHEATDT
-  DEFB $0E
-  DEFM $09,"LD",$09,"IX,CHEATDT"
-  DEFW $113A              ; 4410 ADD IX,DE
-  DEFB $0A
-  DEFM $09,"ADD",$09,"IX,DE"
-  DEFW $1144              ; 4420 LD BC,0F7FEH
-  DEFB $0D
-  DEFM $09,"LD",$09,"BC,0F7FEH"
-  DEFW $114E              ; 4430 IN A,(C)
-  DEFB $09
-  DEFM $09,"IN",$09,"A,(C)"
-  DEFW $1158              ; 4440 AND 31
-  DEFB $07
-  DEFM $09,"AND",$09,"31"
-  DEFW $1162              ; 4450 CP (IX+0)
-  DEFB $0A
-  DEFM $09,"CP",$09,"(IX+0)"
-  DEFW $116C              ; 4460 JR Z,CKNXCHT
-  DEFB $0D
-  DEFM $09,"JR",$09,"Z,CKNXCHT"
-  DEFW $1176              ; 4470 CP 31
-  DEFB $06
-  DEFM $09,"CP",$09,"31"
-  DEFW $1180              ; 4480 JP Z,LOOP
-  DEFB $0A
-  DEFM $09,"JP",$09,"Z,LOOP"
-  DEFW $118A              ; 4490 CP (IX-2)
-  DEFB $0A
-  DEFM $09,"CP",$09,"(IX-2)"
-  DEFW $1194              ; 4500 JP Z,LOOP
-  DEFB $0A
-  DEFM $09,"JP",$09,"Z,LOOP"
-  DEFW $119E              ; 4510 XOR A
-  DEFB $06
-  DEFM $09,"XOR",$09,"A"
-  DEFW $11A8              ; 4520 LD (CHEAT),A
-  DEFB $0D
-  DEFM $09,"LD",$09,"(CHEAT),A"
-  DEFW $11B2              ; 4530 JP LOOP
-  DEFB $08
-  DEFM $09,"JP",$09,"LOOP"
-  DEFW $11BC              ; 4540 CKNXCHT LD B,0EFH
-  DEFB $11
-  DEFM "CKNXCHT",$09,"LD",$09,"B,0EFH"
-  DEFW $11C6              ; 4550 IN A,(C)
-  DEFB $09
-  DEFM $09,"IN",$09,"A,(C)"
-  DEFW $11D0              ; 4560 AND 31
-  DEFB $07
-  DEFM $09,"AND",$09,"31"
-  DEFW $11DA              ; 4570 CP (IX+1)
-  DEFB $0A
-  DEFM $09,"CP",$09,"(IX+1)"
-  DEFW $11E4              ; 4580 JR Z,INCCHT
-  DEFB $0C
-  DEFM $09,"JR",$09,"Z,INCCHT"
-  DEFW $11EE              ; 4590 CP 31
-  DEFB $06
-  DEFM $09,"CP",$09,"31"
-  DEFW $11F8              ; 4600 JP Z,LOOP
-  DEFB $0A
-  DEFM $09,"JP",$09,"Z,LOOP"
-  DEFW $1202              ; 4610 CP (IX-1)
-  DEFB $0A
-  DEFM $09,"CP",$09,"(IX-1)"
-  DEFW $120C              ; 4620 JP Z,LOOP
-  DEFB $0A
-  DEFM $09,"JP",$09,"Z,LOOP"
-  DEFW $1216              ; 4630 XOR A
-  DEFB $06
-  DEFM $09,"XOR",$09,"A"
-  DEFW $1220              ; 4640 LD (CHEAT),A
-  DEFB $0D
-  DEFM $09,"LD",$09,"(CHEAT),A"
-  DEFW $122A              ; 4650 JP LOOP
-  DEFB $08
-  DEFM $09,"JP",$09,"LOOP"
-  DEFW $1234              ; 4660 INCCHT LD A,(CHEAT)
-  DEFB $13
-  DEFM "INCCHT",$09,"LD",$09,"A,(CHEAT)"
-  DEFW $123E              ; 4670 INC A
-  DEFB $06
-  DEFM $09,"INC",$09,"A"
-  DEFW $1248              ; 4680 LD (CHEAT),A
-  DEFB $0D
-  DEFM $09,"LD",$09,"(CHEAT),A"
-  DEFW $1252              ; 4690 JP LOOP
-  DEFB $08
-  DEFM $09,"JP",$09,"LOOP"
-  DEFW $125C              ; 4700 MANDEAD LD A,(DEMO)
-  DEFB $13
-  DEFM "MANDEAD",$09,"LD",$09,"A,(DEMO)"
-  DEFW $1266              ; 4710 OR A
-  DEFB $05
-  DEFM $09,"OR",$09,"A"
-  DEFW $1270              ; 4720 JP NZ,NXSHEET
-  DEFB $0E
-  DEFM $09,"JP",$09,"NZ,NXSHEET"
-  DEFW $127A              ; 4730 LD A,47H
-  DEFB $09
-  DEFM $09,"LD",$09,"A,47H"
-  DEFW $1284              ; 4740 LPDEAD1 LD HL,5800H
-  DEFB $13
-  DEFM "LPDEAD1",$09,"LD",$09,"HL,5800H"
-  DEFW $128E              ; 4750 LD DE,5801H
-  DEFB $0C
-  DEFM $09,"LD",$09,"DE,5801H"
-  DEFW $1298              ; 4760 LD BC,1FFH
-  DEFB $0B
-  DEFM $09,"LD",$09,"BC,1FFH"
-  DEFW $12A2              ; 4770 LD (HL),A
-  DEFB $0A
-  DEFM $09,"LD",$09,"(HL),A"
-  DEFW $12AC              ; 4780 LDIR
-  DEFB $05
-  DEFM $09,"LDIR"
-  DEFW $12B6              ; 4790 LD E,A
-  DEFB $07
-  DEFM $09,"LD",$09,"E,A"
-  DEFW $12C0              ; 4800 CPL
-  DEFB $04
-  DEFM $09,"CPL"
-  DEFW $12CA              ; 4810 AND 7
-  DEFB $06
-  DEFM $09,"AND",$09,"7"
-  DEFW $12D4              ; 4820 RLCA
-  DEFB $05
-  DEFM $09,"RLCA"
-  DEFW $12DE              ; 4830 RLCA
-  DEFB $05
-  DEFM $09,"RLCA"
-  DEFW $12E8              ; 4840 RLCA
-  DEFB $05
-  DEFM $09,"RLCA"
-  DEFW $12F2              ; 4850 OR 7
-  DEFB $05
-  DEFM $09,"OR",$09,"7"
-  DEFW $12FC              ; 4860 LD D,A
-  DEFB $07
-  DEFM $09,"LD",$09,"D,A"
-  DEFW $1306              ; 4870 LD C,E
-  DEFB $07
-  DEFM $09,"LD",$09,"C,E"
-  DEFW $1310              ; 4880 RRC C
-  DEFB $06
-  DEFM $09,"RRC",$09,"C"
-  DEFW $131A              ; 4890 RRC C
-  DEFB $06
-  DEFM $09,"RRC",$09,"C"
-  DEFW $1324              ; 4900 RRC C
-  DEFB $06
-  DEFM $09,"RRC",$09,"C"
-  DEFW $132E              ; 4910 OR 16
-  DEFB $06
-  DEFM $09,"OR",$09,"16"
-  DEFW $1338              ; 4920 XOR A
-  DEFB $06
-  DEFM $09,"XOR",$09,"A"
-  DEFW $1342              ; 4930 TM21 OUT (254),A
-  DEFB $10
-  DEFM "TM21",$09,"OUT",$09,"(254),A"
-  DEFW $134C              ; 4940 XOR 24
-  DEFB $07
-  DEFM $09,"XOR",$09,"24"
-  DEFW $1356              ; 4950 LD B,D
-  DEFB $07
-  DEFM $09,"LD",$09,"B,D"
-  DEFW $1360              ; 4960 TM22 DJNZ TM22
-  DEFB $0E
-  DEFM "TM22",$09,"DJNZ",$09,"TM22"
-  DEFW $136A              ; 4970 DEC C
-  DEFB $06
-  DEFM $09,"DEC",$09,"C"
-  DEFW $1374              ; 4980 JR NZ,TM21
-  DEFB $0B
-  DEFM $09,"JR",$09,"NZ,TM21"
-  DEFW $137E              ; 4990 LD A,E
-  DEFB $07
-  DEFM $09,"LD",$09,"A,E"
-  DEFW $1388              ; 5000 DEC A
-  DEFB $06
-  DEFM $09,"DEC",$09,"A"
-  DEFW $1392              ; 5010 CP 3FH
-  DEFB $07
-  DEFM $09,"CP",$09,"3FH"
-  DEFW $139C              ; 5020 JR NZ,LPDEAD1
-  DEFB $0E
-  DEFM $09,"JR",$09,"NZ,LPDEAD1"
-  DEFW $13A6              ; 5030 LD HL,NOMEN
-  DEFB $0C
-  DEFM $09,"LD",$09,"HL,NOMEN"
-  DEFW $13B0              ; 5040 LD A,(HL)
-  DEFB $0A
-  DEFM $09,"LD",$09,"A,(HL)"
-  DEFW $13BA              ; 5050 OR A
-  DEFB $05
-  DEFM $09,"OR",$09,"A"
-  DEFW $13C4              ; 5060 JP Z,ENDGAM
-  DEFB $0C
-  DEFM $09,"JP",$09,"Z,ENDGAM"
-  DEFW $13CE              ; 5070 DEC (HL)
-  DEFB $09
-  DEFM $09,"DEC",$09,"(HL)"
-  DEFW $13D8              ; 5080 JP NEWSHT
-  DEFB $0A
-  DEFM $09,"JP",$09,"NEWSHT"
-  DEFW $13E2              ; 5090 ENDGAM LD HL,HGHSCOR
-  DEFB $14
-  DEFM "ENDGAM",$09,"LD",$09,"HL,HGHSCOR"
-  DEFW $13EC              ; 5100 LD DE,SCORBUF
-  DEFB $0E
-  DEFM $09,"LD",$09,"DE,SCORBUF"
-  DEFW $13F6              ; 5110 LD B,6
-  DEFB $07
-  DEFM $09,"LD",$09,"B,6"
-  DEFW $1400              ; 5120 LPHGH LD A,(DE)
-  DEFB $0F
-  DEFM "LPHGH",$09,"LD",$09,"A,(DE)"
-  DEFW $140A              ; 5130 CP (HL)
-  DEFB $08
-  DEFM $09,"CP",$09,"(HL)"
-  DEFW $1414              ; 5140 JP C,FEET
-  DEFB $0A
-  DEFM $09,"JP",$09,"C,FEET"
-  DEFW $141E              ; 5150 JP NZ,NEWHGH
-  DEFB $0D
-  DEFM $09,"JP",$09,"NZ,NEWHGH"
-  DEFW $1428              ; 5160 INC HL
-  DEFB $07
-  DEFM $09,"INC",$09,"HL"
-  DEFW $1432              ; 5170 INC DE
-  DEFB $07
-  DEFM $09,"INC",$09,"DE"
-  DEFW $143C              ; 5180 DJNZ LPHGH
-  DEFB $0B
-  DEFM $09,"DJNZ",$09,"LPHGH"
-  DEFW $1446              ; 5190 NEWHGH LD HL,SCORBUF
-  DEFB $14
-  DEFM "NEWHGH",$09,"LD",$09,"HL,SCORBUF"
-  DEFW $1450              ; 5200 LD DE,HGHSCOR
-  DEFB $0E
-  DEFM $09,"LD",$09,"DE,HGHSCOR"
-  DEFW $145A              ; 5210 LD BC,6
-  DEFB $08
-  DEFM $09,"LD",$09,"BC,6"
-  DEFW $1464              ; 5220 LDIR
-  DEFB $05
-  DEFM $09,"LDIR"
-  DEFW $146E              ; 5230 FEET LD HL,4000H
-  DEFB $10
-  DEFM "FEET",$09,"LD",$09,"HL,4000H"
-  DEFW $1478              ; 5240 LD DE,4001H
-  DEFB $0C
-  DEFM $09,"LD",$09,"DE,4001H"
-  DEFW $1482              ; 5250 LD BC,0FFFH
-  DEFB $0C
-  DEFM $09,"LD",$09,"BC,0FFFH"
-  DEFW $148C              ; 5260 LD (HL),0
-  DEFB $0A
-  DEFM $09,"LD",$09,"(HL),0"
-  DEFW $1496              ; 5270 LDIR
-  DEFB $05
-  DEFM $09,"LDIR"
-  DEFW $14A0              ; 5280 XOR A
-  DEFB $06
-  DEFM $09,"XOR",$09,"A"
-  DEFW $14AA              ; 5290 LD (EUGHGT),A
-  DEFB $0E
-  DEFM $09,"LD",$09,"(EUGHGT),A"
-  DEFW $14B4              ; 5300 LD DE,MANDAT+64
-  DEFB $10
-  DEFM $09,"LD",$09,"DE,MANDAT+64"
-  DEFW $14BE              ; 5310 LD HL,488FH
-  DEFB $0C
-  DEFM $09,"LD",$09,"HL,488FH"
-  DEFW $14C8              ; 5320 LD C,0
-  DEFB $07
-  DEFM $09,"LD",$09,"C,0"
-  DEFW $14D2              ; 5330 CALL DRWFIX
-  DEFB $0C
-  DEFM $09,"CALL",$09,"DRWFIX"
-  DEFW $14DC              ; 5340 LD DE,0B6E0H
-  DEFB $0D
-  DEFM $09,"LD",$09,"DE,0B6E0H"
-  DEFW $14E6              ; 5350 LD HL,48CFH
-  DEFB $0C
-  DEFM $09,"LD",$09,"HL,48CFH"
-  DEFW $14F0              ; 5360 LD C,0
-  DEFB $07
-  DEFM $09,"LD",$09,"C,0"
-  DEFW $14FA              ; 5370 CALL DRWFIX
-  DEFB $0C
-  DEFM $09,"CALL",$09,"DRWFIX"
-  DEFW $1504              ; 5380 LOOPFT LD A,(EUGHGT)
-  DEFB $14
-  DEFM "LOOPFT",$09,"LD",$09,"A,(EUGHGT)"
-  DEFW $150E              ; 5390 LD C,A
-  DEFB $07
-  DEFM $09,"LD",$09,"C,A"
-  DEFW $1518              ; 5400 LD B,83H
-  DEFB $09
-  DEFM $09,"LD",$09,"B,83H"
-  DEFW $1522              ; 5410 LD A,(BC)
-  DEFB $0A
-  DEFM $09,"LD",$09,"A,(BC)"
-  DEFW $152C              ; 5420 OR 0FH
-  DEFB $07
-  DEFM $09,"OR",$09,"0FH"
-  DEFW $1536              ; 5430 LD L,A
-  DEFB $07
-  DEFM $09,"LD",$09,"L,A"
-  DEFW $1540              ; 5440 INC BC
-  DEFB $07
-  DEFM $09,"INC",$09,"BC"
-  DEFW $154A              ; 5450 LD A,(BC)
-  DEFB $0A
-  DEFM $09,"LD",$09,"A,(BC)"
-  DEFW $1554              ; 5460 SUB 20H
-  DEFB $08
-  DEFM $09,"SUB",$09,"20H"
-  DEFW $155E              ; 5470 LD H,A
-  DEFB $07
-  DEFM $09,"LD",$09,"H,A"
-  DEFW $1568              ; 5480 LD DE,0BAE0H
-  DEFB $0D
-  DEFM $09,"LD",$09,"DE,0BAE0H"
-  DEFW $1572              ; 5490 LD C,0
-  DEFB $07
-  DEFM $09,"LD",$09,"C,0"
-  DEFW $157C              ; 5500 CALL DRWFIX
-  DEFB $0C
-  DEFM $09,"CALL",$09,"DRWFIX"
-  DEFW $1586              ; 5510 LD A,(EUGHGT)
-  DEFB $0E
-  DEFM $09,"LD",$09,"A,(EUGHGT)"
-  DEFW $1590              ; 5520 CPL
-  DEFB $04
-  DEFM $09,"CPL"
-  DEFW $159A              ; 5530 LD E,A
-  DEFB $07
-  DEFM $09,"LD",$09,"E,A"
-  DEFW $15A4              ; 5540 XOR A
-  DEFB $06
-  DEFM $09,"XOR",$09,"A"
-  DEFW $15AE              ; 5550 LD BC,40H
-  DEFB $0A
-  DEFM $09,"LD",$09,"BC,40H"
-  DEFW $15B8              ; 5560 TM111 OUT (254),A
-  DEFB $11
-  DEFM "TM111",$09,"OUT",$09,"(254),A"
-  DEFW $15C2              ; 5570 XOR 24
-  DEFB $07
-  DEFM $09,"XOR",$09,"24"
-  DEFW $15CC              ; 5580 LD B,E
-  DEFB $07
-  DEFM $09,"LD",$09,"B,E"
-  DEFW $15D6              ; 5590 TM112 DJNZ TM112
-  DEFB $10
-  DEFM "TM112",$09,"DJNZ",$09,"TM112"
-  DEFW $15E0              ; 5600 DEC C
-  DEFB $06
-  DEFM $09,"DEC",$09,"C"
-  DEFW $15EA              ; 5610 JR NZ,TM111
-  DEFB $0C
-  DEFM $09,"JR",$09,"NZ,TM111"
-  DEFW $15F4              ; 5620 LD HL,5800H
-  DEFB $0C
-  DEFM $09,"LD",$09,"HL,5800H"
-  DEFW $15FE              ; 5630 LD DE,5801H
-  DEFB $0C
-  DEFM $09,"LD",$09,"DE,5801H"
-  DEFW $1608              ; 5640 LD BC,1FFH
-  DEFB $0B
-  DEFM $09,"LD",$09,"BC,1FFH"
-  DEFW $1612              ; 5650 LD A,(EUGHGT)
-  DEFB $0E
-  DEFM $09,"LD",$09,"A,(EUGHGT)"
-  DEFW $161C              ; 5660 AND 0CH
-  DEFB $08
-  DEFM $09,"AND",$09,"0CH"
-  DEFW $1626              ; 5670 RLCA
-  DEFB $05
-  DEFM $09,"RLCA"
-  DEFW $1630              ; 5680 OR 47H
-  DEFB $07
-  DEFM $09,"OR",$09,"47H"
-  DEFW $163A              ; 5690 LD (HL),A
-  DEFB $0A
-  DEFM $09,"LD",$09,"(HL),A"
-  DEFW $1644              ; 5700 LDIR
-  DEFB $05
-  DEFM $09,"LDIR"
-  DEFW $164E              ; 5710 LD A,(EUGHGT)
-  DEFB $0E
-  DEFM $09,"LD",$09,"A,(EUGHGT)"
-  DEFW $1658              ; 5720 ADD A,4
-  DEFB $08
-  DEFM $09,"ADD",$09,"A,4"
-  DEFW $1662              ; 5730 LD (EUGHGT),A
-  DEFB $0E
-  DEFM $09,"LD",$09,"(EUGHGT),A"
-  DEFW $166C              ; 5740 CP 0C4H
-  DEFB $08
-  DEFM $09,"CP",$09,"0C4H"
-  DEFW $1676              ; 5750 JR NZ,LOOPFT
-  DEFB $0D
-  DEFM $09,"JR",$09,"NZ,LOOPFT"
-  DEFW $1680              ; 5760 LD IX,MESSG
-  DEFB $0C
-  DEFM $09,"LD",$09,"IX,MESSG"
-  DEFW $168A              ; 5770 LD C,4
-  DEFB $07
-  DEFM $09,"LD",$09,"C,4"
-  DEFW $1694              ; 5780 LD DE,40CAH
-  DEFB $0C
-  DEFM $09,"LD",$09,"DE,40CAH"
-  DEFW $169E              ; 5790 CALL PMESS
-  DEFB $0B
-  DEFM $09,"CALL",$09,"PMESS"
-  DEFW $16A8              ; 5800 LD IX,MESSO
-  DEFB $0C
-  DEFM $09,"LD",$09,"IX,MESSO"
-  DEFW $16B2              ; 5810 LD C,4
-  DEFB $07
-  DEFM $09,"LD",$09,"C,4"
-  DEFW $16BC              ; 5820 LD DE,40D2H
-  DEFB $0C
-  DEFM $09,"LD",$09,"DE,40D2H"
-  DEFW $16C6              ; 5830 CALL PMESS
-  DEFB $0B
-  DEFM $09,"CALL",$09,"PMESS"
-  DEFW $16D0              ; 5840 LD BC,0
-  DEFB $08
-  DEFM $09,"LD",$09,"BC,0"
-  DEFW $16DA              ; 5850 LD D,6
-  DEFB $07
-  DEFM $09,"LD",$09,"D,6"
-  DEFW $16E4              ; 5860 TM91 DJNZ TM91
-  DEFB $0E
-  DEFM "TM91",$09,"DJNZ",$09,"TM91"
-  DEFW $16EE              ; 5870 LD A,C
-  DEFB $07
-  DEFM $09,"LD",$09,"A,C"
-  DEFW $16F8              ; 5880 A[ND 7]
-  DEFB $06
-  DEFM $09,"A"
+; Spare
+SPARE:
+  DEFS $09B8
 
 ; '...MANIC MINER . . © BUG-BYTE ltd. 1983...'
 ;
