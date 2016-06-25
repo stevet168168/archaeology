@@ -303,20 +303,7 @@ L0055:  LD      (IY+$00),L      ; Store it in the system variable ERR_NR.
 ;   placing two zeros in the NMIADD system variable.
 
 ;; RESET
-L0066:  PUSH    AF              ; save the
-        PUSH    HL              ; registers.
-        LD      HL,(NMIADD)     ; fetch the system variable NMIADD.
-        LD      A,H             ; test address
-        OR      L               ; for zero.
-
-        JR      NZ,L0070        ; skip to NO-RESET if NOT ZERO
-
-        JP      (HL)            ; jump to routine ( i.e. L0000 )
-
-;; NO-RESET
-L0070:  POP     HL              ; restore the
-        POP     AF              ; registers.
-        RETN                    ; return to previous interrupt state.
+L0066:  RETN                    ; return to previous interrupt state.
 
 ; ---------------------------
 ; THE 'CH ADD + 1' SUBROUTINE
@@ -15978,6 +15965,17 @@ L3014:  LD      A,(DE)          ; fetch first byte of second
         SBC     A,A             ; restore a negative result sign
 
         LD      (HL),A          ;
+
+        INC     A               ; test for -65536
+        OR      E               ;
+        OR      D               ;
+        JR      NZ,N3040        ; jump if not
+        DEC     HL              ; point to exponent
+        LD      (HL),$91        ; store $91
+        INC     HL              ; point to sign byte
+        LD      (HL),$80        ; overwright $FF with $80
+
+N3040:
         INC     HL              ;
         LD      (HL),E          ;
         INC     HL              ;
@@ -16520,36 +16518,7 @@ L3214:  LD      A,(HL)          ;
 
 ;; T-GR-ZERO
 L3221:  CP      $91             ;
-        JR      NZ,L323F        ; to T-SMALL
-
-        INC     HL              ;
-        INC     HL              ;
-        INC     HL              ;
-        LD      A,$80           ;
-        AND     (HL)            ;
-        DEC     HL              ;
-        OR      (HL)            ;
-        DEC     HL              ;
-        JR      NZ,L3233        ; to T-FIRST
-
-        LD      A,$80           ;
-        XOR     (HL)            ;
-
-;; T-FIRST
-L3233:  DEC     HL              ;
-        JR      NZ,L326C        ; to T-EXPNENT
-
-        LD      (HL),A          ;
-        INC     HL              ;
-        LD      (HL),$FF        ;
-        DEC     HL              ;
-        LD      A,$18           ;
-        JR      L3272           ; to NIL-BYTES
-
-; ---
-
-;; T-SMALL
-L323F:  JR      NC,L326D        ; to X-LARGE
+        JR      NC,L326D        ; to X-LARGE
 
         PUSH    DE              ;
         CPL                     ;
